@@ -1,0 +1,1124 @@
+📑 Agenda – Day 08 | TypeScript OOP's 
+
+================================================================================
+                            DATA STRUCTURES  
+          (TypeScript + Real-Time Automation Framework Perspective)
+================================================================================
+
+1. WHAT IS A DATA STRUCTURE?
+================================================================================
+
+A Data Structure is a way of organizing and storing data so that it can be
+accessed, managed, and modified efficiently.
+
+REAL-TIME EXAMPLE:
+--------------------------------------------------------------------------------
+Instead of:
+let username = "admin";
+let password = "admin123";
+let url = "https://qa-app.com";
+
+Store related data together:
+const config = {
+    username: "admin",
+    password: "admin123",
+    url: "https://qa-app.com"
+}
+
+This improves maintainability and readability.
+
+
+2. WHY DO WE NEED DATA STRUCTURES?
+================================================================================
+
+WITHOUT DATA STRUCTURES:
+--------------------------------------------------------------------------------
+let empId1 = 101;
+let empId2 = 102;
+let empId3 = 103;
+
+Difficult to manage when data grows.
+
+WITH DATA STRUCTURES:
+--------------------------------------------------------------------------------
+const empIds = [101, 102, 103];
+
+Easy to: Add, Remove, Search, Sort, Iterate
+
+
+3. ARRAY
+================================================================================
+
+Stores multiple values in a single variable.
+
+const browsers = ["chrome", "edge", "firefox", "safari"];
+
+REAL-TIME AUTOMATION EXAMPLE - Store supported browsers:
+--------------------------------------------------------------------------------
+const browsers = ["chrome", "edge", "firefox", "safari"];
+
+Access: browsers[0]  // chrome
+
+FRAMEWORK USAGE:
+  • Test Data
+  • URLs
+  • Browser Names
+  • User Roles
+  • Expected Values
+
+
+4. OBJECT
+================================================================================
+
+Stores data as key-value pairs.
+
+const employee = {
+    empId: 882,
+    designation: "Sr.SDET"
+}
+
+REAL-TIME AUTOMATION EXAMPLE - Environment Configuration:
+--------------------------------------------------------------------------------
+const config = {
+    username: "DemoCSR",
+    password: "crmsfa",
+    url: "https://leaftaps.com"
+}
+
+FRAMEWORK USAGE:
+  • Config Files
+  • Test Data
+  • API Payloads
+  • Environment Settings
+
+
+5. NESTED OBJECT
+================================================================================
+
+Object inside another object.
+
+const empInfo = {
+    bhuvaneshInfo: {
+        empId: 882,
+        designation: "Sr.SDET"
+    },
+    vinothInfo: {
+        empId: 445,
+        designation: "SDET"
+    }
+}
+
+STRUCTURE:
+--------------------------------------------------------------------------------
+empInfo
+│
+├── bhuvaneshInfo
+│   ├── empId
+│   └── designation
+│
+└── vinothInfo
+    ├── empId
+    └── designation
+
+REAL-TIME AUTOMATION EXAMPLE - Multiple Environment Configurations:
+--------------------------------------------------------------------------------
+const environments = {
+    qa: {
+        url: "https://qa-app.com"
+    },
+    prod: {
+        url: "https://prod-app.com"
+    }
+}
+
+Access: environments.qa.url
+
+
+6. TYPE ALIAS
+================================================================================
+
+Used to create reusable custom types.
+
+WITHOUT TYPE ALIAS:
+--------------------------------------------------------------------------------
+bhuvaneshInfo: { empId: number, phno: number }
+vinothInfo: { empId: number, phno: number }
+
+Repeated structure.
+
+WITH TYPE ALIAS:
+--------------------------------------------------------------------------------
+type Employee = {
+    empId: number,
+    phno: number
+}
+
+Reuse:
+bhuvaneshInfo: Employee
+vinothInfo: Employee
+
+BENEFITS:
+  • Reusability
+  • Readability
+  • Maintainability
+  • Less duplication
+
+
+7. UNION TYPE ( | )
+================================================================================
+
+Represents "OR".
+
+type Browser = "chrome" | "edge" | "firefox" | "safari";
+
+Meaning: browser can be chrome OR edge OR firefox OR safari
+
+REAL-TIME AUTOMATION EXAMPLE:
+--------------------------------------------------------------------------------
+type Environment = "QA" | "UAT" | "PROD";
+
+Restricts invalid values.
+
+let env: Environment = "QA";     // Valid
+let env: Environment = "DEV";    // Invalid
+
+
+
+8. INTERSECTION TYPE ( & )
+================================================================================
+
+Represents "AND". Combines multiple types.
+
+When does Intersection Work?
+
+Intersection is mostly useful with Objects.
+
+type Credentials = {
+    username: string,
+    password: string
+}
+
+type EnvironmentUrl = {
+    url: string
+}
+
+Combine:
+type TestConfig = Credentials & EnvironmentUrl;
+
+Result:
+{
+    username: string,
+    password: string,
+    url: string
+}
+
+Here intersection makes sense because:
+Object can contain properties from both types.
+
+REAL-TIME AUTOMATION EXAMPLE - Framework Configuration:
+--------------------------------------------------------------------------------
+type TestConfig = Credentials & EnvironmentUrl;
+
+const preCondition : TestConfig = {
+    username: "DemoCSR",
+    password: "crmsfa",
+    url: "https://leaftaps.com"
+}
+
+
+10. TYPE NARROWING (Most Important Concept)
+================================================================================
+
+INITIAL STATE:
+--------------------------------------------------------------------------------
+type Browser = "chrome" | "edge" | "firefox" | "safari";
+let browserName: Browser;
+
+Possible values: chrome, edge, firefox, safari
+
+AFTER ASSIGNMENT:
+--------------------------------------------------------------------------------
+browserName = "chrome";
+
+TypeScript narrows: chrome | edge | firefox | safari → to → chrome
+
+This is called: Type Narrowing (Control Flow Analysis)
+
+WHY IT MATTERS:
+TypeScript can predict unreachable code and catch mistakes during compilation.
+
+
+
+REAL-TIME PLAYWRIGHT EXAMPLE:
+--------------------------------------------------------------------------------
+type Environment = "QA" | "UAT" | "PROD";
+
+function execute(env: Environment){
+
+    switch(env){
+
+        case "QA":
+            console.log("Run QA URL");
+            break;
+
+        case "UAT":
+            console.log("Run UAT URL");
+            break;
+
+        case "PROD":
+            console.log("Run PROD URL");
+            break;
+    }
+}
+
+
+================================================================================
+                         INTERVIEW SUMMARY - DATA STRUCTURES
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Concept         │ Description                        │ Framework Use        │
+├─────────────────┼────────────────────────────────────┼──────────────────────┤
+│ Array           │ Stores multiple values (index 0)   │ Test data, browser   │
+│                 │                                    │ lists                │
+│ Object          │ Key-value pairs                    │ Configs, payloads    │
+│ Nested Object   │ Object inside another object       │ Multi-environment    │
+│                 │                                    │ configs              │
+│ Type Alias      │ Reusable custom type               │ Avoid code duplication│
+│ Union ( | )     │ Choose One                         │ Browser selection    │
+│ Intersection (&)│ Merge All                          │ Framework config     │
+│ Type Narrowing  │ TypeScript reduces possible values │ Compile-time         │
+│                 │ when exact value is known          │ validation           │
+│ Switch          │ Browser-specific logic execution   │ Browser launch logic │
+└─────────────────┴────────────────────────────────────┴──────────────────────┘
+
+
+REAL FRAMEWORK MAPPING:
+================================================================================
+Array           → Browser List, Test Data
+Object          → Config Files
+Nested Object   → Multi-Environment Data
+Union Type      → Browser Selection
+Intersection    → Framework Configuration
+Switch          → Browser Launch Logic
+Type Narrowing  → Compile-Time Validation
+
+
+
+================================================================================
+                    TYPE ASSERTION IN TYPESCRIPT
+================================================================================
+
+WHAT IS TYPE ASSERTION?
+================================================================================
+
+DEFINITION:
+--------------------------------------------------------------------------------
+Type Assertion tells TypeScript:
+
+  "Trust me, I know the datatype better than you."
+
+IMPORTANT:
+  • It does NOT change the actual datatype
+  • It only tells the TypeScript compiler to treat a value as a specific type
+
+
+WHY DO WE NEED TYPE ASSERTION?
+================================================================================
+
+Sometimes TypeScript cannot determine the exact type.
+
+EXAMPLE:
+--------------------------------------------------------------------------------
+let value: unknown = "Playwright";
+
+Here TypeScript only knows: value is unknown
+
+So this will FAIL:
+console.log(value.toUpperCase());
+// Compile Error: Object is of type 'unknown'
+
+
+HOW TO PERFORM TYPE ASSERTION?
+================================================================================
+
+METHOD 1: Using "as"
+--------------------------------------------------------------------------------
+let value: unknown = "Playwright";
+console.log((value as string).toUpperCase());
+// Output: PLAYWRIGHT
+
+METHOD 2: Angle Bracket Syntax
+--------------------------------------------------------------------------------
+let value: unknown = "Playwright";
+console.log((<string>value).toUpperCase());
+// Output: PLAYWRIGHT
+
+NOTE:
+  • Prefer "as" syntax
+  • Angle bracket syntax is avoided in React projects
+
+
+REAL-TIME PLAYWRIGHT EXAMPLES
+================================================================================
+
+EXAMPLE 1: API Response
+--------------------------------------------------------------------------------
+Without Type Assertion:
+let response: unknown = await apiResponse.json();
+console.log(response.userName);
+// Compile Error: Object is of type 'unknown'
+
+With Type Assertion:
+let response: unknown = await apiResponse.json();
+console.log((response as any).userName);
+
+EXAMPLE 2: Environment Configuration
+--------------------------------------------------------------------------------
+let envData: unknown = {
+    url: "https://testleaf.com"
+};
+console.log((envData as { url: string }).url);
+// Output: https://testleaf.com
+
+EXAMPLE 3: HTML Element Handling
+--------------------------------------------------------------------------------
+const element = document.getElementById("username");
+// TypeScript sees: HTMLElement | null
+
+To access input-specific properties:
+const input = document.getElementById("username") as HTMLInputElement;
+console.log(input.value);
+
+
+TYPE ASSERTION vs TYPE NARROWING
+================================================================================
+
+TYPE ASSERTION:
+--------------------------------------------------------------------------------
+let data: unknown = "Playwright";
+console.log((data as string).toUpperCase());
+
+Meaning: Developer is forcing TypeScript to trust him.
+
+TYPE NARROWING (Recommended):
+--------------------------------------------------------------------------------
+let data: unknown = "Playwright";
+
+if (typeof data === "string") {
+    console.log(data.toUpperCase());
+}
+
+Meaning: TypeScript validates before usage.
+
+
+RISK OF TYPE ASSERTION
+================================================================================
+
+EXAMPLE:
+--------------------------------------------------------------------------------
+let value: unknown = 100;
+console.log((value as string).toUpperCase());
+
+TypeScript: No Compile Error
+Runtime: TypeError: toUpperCase is not a function
+
+REASON:
+  Type Assertion does NOT convert data.
+  It only changes compiler perception.
+
+
+INTERVIEW EXAMPLE
+================================================================================
+
+function getResponse(): unknown {
+    return {
+        userName: "Admin"
+    };
+}
+
+const response = getResponse() as { userName: string };
+console.log(response.userName);
+// Output: Admin
+
+
+================================================================================
+                         INTERVIEW SUMMARY
+================================================================================
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ Concept                      │ Description                                   │
+├──────────────────────────────┼───────────────────────────────────────────────┤
+│ Type Assertion               │ Explicitly tell TypeScript the expected       │
+│                              │ datatype                                      │
+│ Syntax 1                     │ value as datatype                             │
+│ Syntax 2                     │ <datatype>value                               │
+│ Does NOT perform             │ Datatype conversion                           │
+│ Only affects                 │ TypeScript compilation                        │
+│ Recommended alternative      │ Type Narrowing (runtime safety)               │
+└──────────────────────────────┴───────────────────────────────────────────────┘
+
+GOLDEN RULE:
+--------------------------------------------------------------------------------
+Whenever possible, prefer Type Narrowing over Type Assertion because it provides
+runtime safety.
+
+================================================================================
+                    CLASSROOM ACTIVITY: UNION TYPE
+================================================================================
+
+ACTIVITY DESCRIPTION:
+--------------------------------------------------------------------------------
+- Create a function that accepts only specific payment methods.
+- Create a type alias called PaymentMethod that allows only "UPI", "CreditCard",
+  or "PayPal".
+- Write a function makePayment that takes a parameter of type PaymentMethod and
+  prints which payment method is chosen.
+- Call the function with "UPI" and "CreditCard" as arguments.
+
+
+OUTPUT:
+--------------------------------------------------------------------------------
+Payment method chosen: UPI
+Payment method chosen: CreditCard
+================================================================================
+================================================================================
+                         ENUMS IN TYPESCRIPT
+                    (AUTOMATION FRAMEWORK CONTEXT)
+================================================================================
+
+INTRODUCTION
+================================================================================
+
+Enums are used when we have a fixed set of constants. In automation frameworks,
+common examples include Execution Status, Browser Types, User Roles, and
+Environment Names.
+
+WHAT IS ENUM?
+================================================================================
+
+DEFINITION:
+--------------------------------------------------------------------------------
+Enum (Enumeration) is a TypeScript feature used to define a fixed set of named
+constants.
+
+INSTEAD OF:
+--------------------------------------------------------------------------------
+let browser = "chrome";
+let status = "PASS";
+let role = "ADMIN";
+
+WE CAN USE:
+--------------------------------------------------------------------------------
+enum Browser {
+    CHROME,
+    FIREFOX,
+    EDGE
+}
+
+WHY USE ENUMS?
+================================================================================
+
+• Avoid hardcoded values
+• Avoid spelling mistakes (compile-time validation)
+• Improve code readability
+• Provide IDE auto-suggestions
+• Maintain centralized constants
+• Enable safe refactoring
+
+
+REAL-TIME AUTOMATION EXAMPLES
+================================================================================
+
+1. BROWSER TYPES:
+--------------------------------------------------------------------------------
+enum Browser {
+    CHROME = "chrome",
+    FIREFOX = "firefox",
+    EDGE = "msedge"
+}
+
+let browser = Browser.CHROME;
+
+Use Cases:
+  • Cross-browser execution
+  • Framework configuration
+  • Browser selection logic
+
+2. EXECUTION STATUS:
+--------------------------------------------------------------------------------
+enum ExecutionStatus {
+    PASS = "PASS",
+    FAIL = "FAIL",
+    SKIP = "SKIP"
+}
+
+Use Cases:
+  • Custom reporting
+  • Extent/Allure Reports
+  • Test result processing
+
+3. ENVIRONMENT SELECTION:
+--------------------------------------------------------------------------------
+enum Environment {
+    QA = "https://qa.testleaf.com",
+    UAT = "https://uat.testleaf.com",
+    PROD = "https://prod.testleaf.com"
+}
+
+Use Cases:
+  • Environment management
+  • URL selection
+  • Configuration management
+
+4. USER ROLES:
+--------------------------------------------------------------------------------
+enum UserRole {
+    ADMIN = "ADMIN",
+    MANAGER = "MANAGER",
+    USER = "USER",
+    GUEST = "GUEST"
+}
+
+
+TYPES OF ENUM
+================================================================================
+
+1. NUMERIC ENUM
+--------------------------------------------------------------------------------
+
+WHAT:
+If values are not initialized, TypeScript automatically assigns numbers starting
+from 0.
+
+SYNTAX:
+enum ExecutionStatus {
+    PASS,    // 0
+    FAIL,    // 1
+    SKIP     // 2
+}
+
+INTERNAL REPRESENTATION:
+enum ExecutionStatus {
+    PASS = 0,
+    FAIL = 1,
+    SKIP = 2
+}
+
+USAGE:
+console.log(ExecutionStatus.PASS);  // Output: 0
+
+WHEN TO USE:
+  • When numeric values are sufficient
+  • Less commonly used in automation projects
+
+2. STRING ENUM (RECOMMENDED FOR AUTOMATION)
+--------------------------------------------------------------------------------
+
+WHAT:
+Values are explicitly assigned as strings.
+
+SYNTAX:
+enum ExecutionStatus {
+    PASS = "PASS",
+    FAIL = "FAIL",
+    SKIP = "SKIP"
+}
+
+USAGE:
+console.log(ExecutionStatus.PASS);  // Output: PASS
+
+WHY PREFER STRING ENUMS:
+  • Readable logs
+  • Readable reports
+  • Easy debugging
+  • Better maintainability
+  • Self-documenting code
+
+REAL PROJECT RECOMMENDATION:
+  Always prefer String Enum in automation frameworks.
+
+
+ENUM vs TYPE ALIAS
+================================================================================
+
+TYPE ALIAS:
+--------------------------------------------------------------------------------
+type Browser = "chrome" | "firefox" | "msedge";
+
+let browser: Browser = "chrome";
+
+PURPOSE: Creates a custom datatype for compile-time validation
+
+ENUM:
+--------------------------------------------------------------------------------
+enum Browser {
+    CHROME = "chrome",
+    FIREFOX = "firefox",
+    EDGE = "msedge"
+}
+
+let browser = Browser.CHROME;
+
+PURPOSE: Creates named constants usable at compile time AND runtime
+
+COMPARISON TABLE:
+--------------------------------------------------------------------------------
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Feature                    │ Enum               │ Type Alias                │
+├────────────────────────────┼────────────────────┼───────────────────────────┤
+│ Creates Constants          │ Yes                │ No                        │
+│ Exists at Runtime          │ Yes                │ No                        │
+│ Generates JavaScript Code  │ Yes                │ No                        │
+│ Auto Suggestion            │ Excellent          │ Good                      │
+│ Used for Fixed Values      │ Yes                │ Yes                       │
+│ Can have methods           │ No		  │ No                        │
+└────────────────────────────┴────────────────────┴───────────────────────────┘
+
+
+ENUM vs TYPE ASSERTION
+================================================================================
+
+These are completely different concepts.
+
+ENUM:
+--------------------------------------------------------------------------------
+PURPOSE: Store predefined constant values.
+
+EXAMPLE:
+enum UserRole {
+    ADMIN = "ADMIN",
+    USER = "USER"
+}
+
+let role = UserRole.ADMIN;
+
+TYPE ASSERTION:
+--------------------------------------------------------------------------------
+PURPOSE: Tell TypeScript to trust the developer about a datatype.
+
+EXAMPLE:
+let value: unknown = "Playwright";
+let data = value as string;
+
+Meaning: "I know this value is string. Trust me."
+
+COMPARISON TABLE:
+--------------------------------------------------------------------------------
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Feature                    │ Enum               │ Type Assertion            │
+├────────────────────────────┼────────────────────┼───────────────────────────┤
+│ Stores Constants           │ Yes                │ No                        │
+│ Creates Types              │ No                 │ No                        │
+│ Helps Runtime Logic        │ Yes                │ No                        │
+│ Changes Compiler Perception│ No                 │ Yes                       │
+│ Used for Data Conversion   │ No                 │ No                        │
+└────────────────────────────┴────────────────────┴───────────────────────────┘
+
+
+WHEN TO USE ENUM?
+================================================================================
+
+USE ENUM FOR:
+--------------------------------------------------------------------------------
+✓ Browser Types (CHROME, FIREFOX, EDGE, SAFARI)
+✓ Execution Status (PASS, FAIL, SKIP)
+✓ Environment Names (QA, UAT, PROD, DEV)
+✓ User Roles (ADMIN, MANAGER, USER, GUEST)
+✓ Payment Status (PENDING, COMPLETED, FAILED, REFUNDED)
+✓ Order Status (CREATED, PROCESSING, SHIPPED, DELIVERED)
+✓ HTTP Status Codes (OK, CREATED, BAD_REQUEST, UNAUTHORIZED)
+
+WHEN NOT TO USE ENUM:
+--------------------------------------------------------------------------------
+✗ For simple datatype restrictions (use Type Alias instead)
+
+EXAMPLE - Prefer Type Alias:
+type Browser = "chrome" | "firefox" | "msedge";
+
+
+INTERVIEW SUMMARY
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Concept                      │ Key Point                                     │
+├──────────────────────────────┼───────────────────────────────────────────────┤
+│ Enum Definition              │ Fixed set of named constants                 │
+│ Numeric Enum                 │ Auto-assigns values (0, 1, 2...)             │
+│ String Enum                  │ Explicit string values (recommended)         │
+│ Primary Benefit              │ No hardcoded values, no spelling mistakes    │
+│ Enum vs Type Alias           │ Enum = runtime constants; Type Alias = types │
+│ Enum vs Type Assertion       │ Completely different concepts                │
+│ Automation Recommendation    │ Always prefer String Enum                    │
+└──────────────────────────────┴───────────────────────────────────────────────┘
+
+
+GOLDEN RULES
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Type Alias          → Creates Custom Types (compile-time only)             │
+│ Enum                → Creates Fixed Constants (runtime + compile-time)     │
+│ Type Assertion      → Forces TypeScript to Trust the Developer             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+REAL PROJECT EXAMPLE:
+================================================================================
+
+// enums/Browser.enum.ts
+export enum Browser {
+    CHROME = "chrome",
+    FIREFOX = "firefox",
+    EDGE = "msedge",
+    SAFARI = "webkit"
+}
+
+// enums/Environment.enum.ts
+export enum Environment {
+    QA = "https://qa.testleaf.com",
+    UAT = "https://uat.testleaf.com",
+    PROD = "https://prod.testleaf.com"
+}
+
+// config/playwright.config.ts
+import { Browser, Environment } from './enums';
+
+const browser = Browser.CHROME;
+const baseURL = Environment.QA;
+
+export default defineConfig({
+    use: {
+        browserName: browser,
+        baseURL: baseURL
+    }
+});
+
+
+================================================================================
+                         OBJECT-ORIENTED PROGRAMMING IN TYPESCRIPT
+                                   (AUTOMATION CONTEXT)
+================================================================================
+
+WHY OOP IN AUTOMATION?
+================================================================================
+
+Consider building a Playwright Framework.
+
+WITHOUT OOP:
+--------------------------------------------------------------------------------
+• login code copied in 50 test files
+• same locator copied everywhere
+• same browser methods repeated
+• difficult to maintain
+• high maintenance cost
+• inconsistent implementation
+
+WITH OOP:
+--------------------------------------------------------------------------------
+• Code Reusable
+• Easy Maintenance
+• Structured Framework
+• Less Duplication
+• Easy Scaling
+• Industry Standard
+• Consistent Implementation
+
+The Page Object Model (POM) is built using OOP principles for these exact reasons.
+
+
+LEARNING ROADMAP
+================================================================================
+
+┌────────────────────────────────────────────────────────────────────────────┐
+│ 1. Class                                                                   │
+│ 2. Object                                                                  │
+│ 3. Constructor                                                             │
+│ 4. Access Modifiers                                                        │
+│ 5. Inheritance                                                             │
+│ 6. Polymorphism                                                            │
+│ 7. Abstraction                                                             │
+│ 8. Interface                                                               │
+│ 9. Abstract Class                                                          │
+└────────────────────────────────────────────────────────────────────────────┘
+
+TODAY'S COVERAGE:
+  1. Class
+  2. Object
+  3. Constructor
+  4. Access Modifiers
+  5. Inheritance
+
+
+================================================================================
+1. CLASS
+================================================================================
+
+DEFINITION:
+--------------------------------------------------------------------------------
+A Class is a blueprint or template used to create objects.
+
+REAL LIFE EXAMPLE:
+--------------------------------------------------------------------------------
+House Plan = Class
+Actual House = Object
+
+AUTOMATION EXAMPLE:
+--------------------------------------------------------------------------------
+LoginPage, HomePage, LeadPage are all classes.
+
+SYNTAX:
+--------------------------------------------------------------------------------
+class LoginPage {
+    login() {
+        console.log("Login Successful");
+    }
+}
+
+At this stage:
+  • No memory allocated
+  • No object created
+  • Only a blueprint exists
+
+
+================================================================================
+2. OBJECT
+================================================================================
+
+DEFINITION:
+--------------------------------------------------------------------------------
+An Object is an instance of a class.
+
+SYNTAX:
+--------------------------------------------------------------------------------
+class LoginPage {
+    login() {
+        console.log("Login Successful");
+    }
+}
+
+const page = new LoginPage();
+
+Here:
+  LoginPage = Blueprint
+  page = Actual Object
+
+Memory is allocated only when new LoginPage() is executed.
+
+WHY OBJECT IS REQUIRED?
+--------------------------------------------------------------------------------
+Many learners ask: "Why can't I directly call login()?"
+
+Because:
+  Class = Design
+  Object = Real Entity
+
+EXAMPLE:
+--------------------------------------------------------------------------------
+class Employee {
+    work() {
+        console.log("Working");
+    }
+}
+
+// Wrong:
+Employee.work();  // Error
+
+// Correct:
+const emp = new Employee();
+emp.work();
+
+REAL-TIME PLAYWRIGHT EXAMPLE:
+--------------------------------------------------------------------------------
+class LoginPage {
+    async login() {
+        console.log("Login");
+    }
+}
+
+// Test File:
+const loginPage = new LoginPage();
+await loginPage.login();
+
+
+================================================================================
+3. CONSTRUCTOR
+================================================================================
+
+DEFINITION:
+--------------------------------------------------------------------------------
+A special method automatically executed when an object is created.
+
+SYNTAX:
+--------------------------------------------------------------------------------
+class Employee {
+    constructor() {
+        console.log("Object Created");
+    }
+}
+
+new Employee();  // Output: Object Created
+
+WHY CONSTRUCTOR?
+--------------------------------------------------------------------------------
+To initialize object data during object creation.
+
+EXAMPLE:
+--------------------------------------------------------------------------------
+class Employee {
+    name: string;
+
+    constructor(name: string) {
+        this.name = name;
+    }
+}
+
+const emp = new Employee("Bhuvanesh");
+// name = "Bhuvanesh" is initialized automatically
+
+REAL-TIME PLAYWRIGHT EXAMPLE:
+--------------------------------------------------------------------------------
+class LoginPage {
+    constructor(private page: Page) {}
+}
+
+Why? The Playwright page object must be available throughout the class.
+
+FREQUENTLY ASKED QUESTION:
+--------------------------------------------------------------------------------
+Q: Should file name and class name be the same?
+A: No, it is not mandatory. This is valid:
+
+   File: test.ts
+   class LoginPage {}
+
+However, industry convention follows:
+   LoginPage.ts contains class LoginPage {}
+
+This improves readability and maintainability.
+
+
+================================================================================
+4. ACCESS MODIFIERS
+================================================================================
+
+Used to control visibility of class members.
+
+TypeScript provides:
+  • public
+  • private
+  • protected
+
+PUBLIC (Default):
+--------------------------------------------------------------------------------
+Accessible everywhere.
+
+EXAMPLE:
+class Employee {
+    public name = "Bhuvanesh";
+}
+
+const emp = new Employee();
+console.log(emp.name);  // Output: Bhuvanesh
+
+PRIVATE:
+--------------------------------------------------------------------------------
+Accessible only inside the same class.
+
+EXAMPLE:
+class Employee {
+    private salary = 50000;
+}
+
+emp.salary;  // ❌ Compiler Error - Property 'salary' is private
+
+WHY PRIVATE?
+--------------------------------------------------------------------------------
+To protect sensitive information.
+
+Automation examples:
+  • private passwordLocator
+  • private token
+  • private apiKey
+
+These should not be exposed outside the class.
+
+PROTECTED:
+--------------------------------------------------------------------------------
+Accessible:
+  • Inside the same class
+  • Inside child classes (inheritance)
+  • Not accessible outside
+
+EXAMPLE:
+class BasePage {
+    protected browser = "chrome";
+}
+
+class LoginPage extends BasePage {
+    showBrowser() {
+        console.log(this.browser);  // ✅ Accessible in child class
+    }
+}
+
+// Outside:
+const page = new BasePage();
+page.browser;  // ❌ Error - Property 'browser' is protected
+
+
+
+================================================================================
+FUNCTION VS METHOD
+================================================================================
+
+FUNCTION:
+--------------------------------------------------------------------------------
+function login() { }
+Independent, not associated with any class.
+
+METHOD:
+--------------------------------------------------------------------------------
+class LoginPage {
+    login() { }  // Method inside class
+}
+
+RULE:
+  Every Method is a Function
+  But NOT every Function is a Method
+
+
+================================================================================
+IMPORTANT INTERVIEW DIFFERENCES
+================================================================================
+
+JAVA:
+--------------------------------------------------------------------------------
+• Compile-time Polymorphism (Method Overloading)
+• Runtime Polymorphism (Method Overriding)
+
+TYPESCRIPT:
+--------------------------------------------------------------------------------
+• Runtime Polymorphism (Method Overriding)
+• Compile-time Style Support (Overload Signatures)
+• NOT true Java-style method overloading
+
+TypeScript uses Prototype-Based Inheritance internally but provides class syntax
+similar to Java for better developer experience.
+
+
+================================================================================
+TODAY'S TAKEAWAY
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Concept          │ Summary                                                  │
+├──────────────────┼──────────────────────────────────────────────────────────┤
+│ Class            │ Blueprint / Template for creating objects               │
+│ Object           │ Actual instance of a class (memory allocated)           │
+│ Constructor      │ Initializes object data, auto-executes on object creation│
+│ Function         │ Independent, not bound to any class                     │
+│ Method           │ Function declared inside a class                        │
+└──────────────────┴──────────────────────────────────────────────────────────┘
+
+================================================================================
+                              END OF DOCUMENT
+================================================================================
