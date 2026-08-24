@@ -1,0 +1,12 @@
+[
+{
+ "role":"Admin",
+ "username":"democsr",
+ "password":"crmsfa"   
+},
+{
+ "role":"User",
+ "username":"democsr2",
+ "password":"crmsfa"   
+}
+]
