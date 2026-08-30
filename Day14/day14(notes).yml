@@ -1,0 +1,1546 @@
+📑 Agenda – Day 14 | Custom Fixture and Page Object Model
+
+=======================Salesforce Credentials====================================
+gusername : bhuvanesh.qeagle.1ce512d00545@agentforce.com
+password : Qeagle@2026
+To easily log in later, save this URL:
+https://orgfarm-7ab5008399-dev-ed.develop.my.salesforce.com
+
+Call Back Url:
+https://login.salesforce.com/services/oauth2/token
+================================================================================
+Salesforce document to get endpoint to generate access token  :
+https://help.salesforce.com/s/articleView?languempId=en_US&id=xcloud.remoteaccess_oauth_endpoints.htm&type=5
+
+Salesforce document to do CRUD operation for  Lead /Account :
+https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_curl.htm 
+
+Salesforce document for SOQL : 
+https://developer.salesforce.com/docs/atlas.en-us.soql_sosl.meta/soql_sosl/sforce_api_calls_soql.htm
+https://workbench.developerforce.com/query.php 
+
+================================================================================
+              PLAYWRIGHT DESIGN PATTERNS & FIXTURE PATTERN
+================================================================================
+
+
+1. WHAT IS A DESIGN PATTERN?
+================================================================================
+
+A Design Pattern is a reusable solution to a commonly occurring software design
+problem.
+
+Instead of writing everything in one class or one test, we divide the
+application into multiple reusable components.
+
+BENEFITS:
+--------------------------------------------------------------------------------
+  • Improves code readability
+  • Reduces duplicate code
+  • Easier maintenance
+  • Better scalability
+  • Easier debugging
+  • Encourages code reusability
+
+
+================================================================================
+              2. DESIGN PATTERNS USED IN PLAYWRIGHT FRAMEWORK
+================================================================================
+
+COMMONLY USED PATTERNS:
+--------------------------------------------------------------------------------
+  1. Page Object Model (POM)
+  2. Fixture Pattern
+  3. Builder Pattern
+  4. Factory Pattern
+  5. Singleton Pattern
+  6. Repository Pattern
+  7. Strategy Pattern
+  8. Dependency Injection (through Fixtures)
+  9. Facade Pattern
+  10. Command Pattern
+
+RECOMMENDED LEARNING ORDER:
+--------------------------------------------------------------------------------
+Page Object Model
+        ↓
+Fixture Pattern
+        ↓
+Dependency Injection
+        ↓
+Builder Pattern
+        ↓
+Factory Pattern
+        ↓
+Singleton Pattern
+        ↓
+Repository Pattern
+        ↓
+Strategy Pattern
+        ↓
+Facade Pattern
+        ↓
+Command Pattern
+
+
+================================================================================
+                    3. WHAT IS THE FIXTURE PATTERN?
+================================================================================
+
+A Fixture is an object or resource that Playwright creates before the test
+execution and provides automatically to the test.
+
+Instead of manually creating objects inside every test, Playwright prepares
+them for us.
+
+WITHOUT FIXTURES:
+--------------------------------------------------------------------------------
+Every test creates its own page objects.
+
+const loginPage = new LoginPage(page);
+const homePage = new HomePage(page);
+
+This leads to duplicate code across multiple test files.
+
+WITH FIXTURES:
+--------------------------------------------------------------------------------
+Playwright automatically provides the required page objects.
+
+test('Create Lead', async ({ SFlogin, SFhome }) => {
+    // No manual object creation needed
+});
+
+No manual object creation is required.
+
+
+================================================================================
+                    4. UNDERSTANDING THE FIXTURE CODE
+================================================================================
+
+import { test as baseTest } from '@playwright/test';
+
+WHY RENAME test?
+--------------------------------------------------------------------------------
+Playwright already provides a built-in test.
+
+We rename it to baseTest because we are going to extend it with our own custom
+fixtures.
+
+CREATING CUSTOM FIXTURE TYPE:
+--------------------------------------------------------------------------------
+type SalesforceFixture = {
+    SFlogin: LoginPage,
+    SFhome: HomePage
+}
+
+This tells TypeScript that our tests will receive two additional objects:
+  • SFlogin
+  • SFhome
+
+Along with Playwright's built-in fixtures like:
+  • page
+  • browser
+  • context
+
+
+================================================================================
+                    5. EXTENDING PLAYWRIGHT TEST
+================================================================================
+
+baseTest.extend<SalesforceFixture>({
+
+This extends Playwright's built-in test object.
+
+After extension, the test receives both built-in and custom fixtures.
+
+
+================================================================================
+                    6. CREATING THE LOGIN PAGE FIXTURE
+================================================================================
+
+SFlogin: async ({ page }, use) => {
+    const loginPage = new LoginPage(page);
+    await use(loginPage);
+}
+
+STEP-BY-STEP FLOW:
+--------------------------------------------------------------------------------
+STEP 1: Playwright creates the built-in page object
+        Playwright → page
+
+STEP 2: The fixture receives the page
+        new LoginPage(page)
+
+STEP 3: The LoginPage object is created
+        LoginPage
+
+STEP 4: The object is passed to the test using:
+        await use(loginPage)
+
+
+================================================================================
+                    7. PURPOSE OF use()
+================================================================================
+
+use() is responsible for making the created object available to the test.
+
+WITHOUT use():
+--------------------------------------------------------------------------------
+const loginPage = new LoginPage(page);
+// The object exists only inside the fixture
+// The test cannot access it
+
+WITH use():
+--------------------------------------------------------------------------------
+await use(loginPage);
+// The object becomes available as SFlogin inside the test
+
+
+================================================================================
+                    8. COMPLETE EXECUTION FLOW
+================================================================================
+
+Test Starts
+      │
+      ▼
+Playwright Creates Browser
+      │
+      ▼
+Creates Context
+      │
+      ▼
+Creates Page
+      │
+      ▼
+Calls SFlogin Fixture
+      │
+      ▼
+Creates LoginPage Object
+      │
+      ▼
+await use(loginPage)
+      │
+      ▼
+Calls SFhome Fixture
+      │
+      ▼
+Creates HomePage Object
+      │
+      ▼
+await use(homePage)
+      │
+      ▼
+Both Objects Are Passed To Test
+      │
+      ▼
+Test Executes
+      │
+      ▼
+Fixture Cleanup (if any)
+
+
+================================================================================
+                    9. TEST EXECUTION
+================================================================================
+
+The test becomes much cleaner:
+
+test('Create Lead', async ({ SFlogin, SFhome }) => {
+    await SFlogin.enterUrl(url);
+    await SFlogin.enterUsername(username);
+    await SFlogin.enterPassword(password);
+    await SFlogin.clickLogin();
+    await SFhome.clickLeads();
+});
+
+No object creation is needed inside the test.
+
+
+================================================================================
+                    10. WHY USE FIXTURES?
+================================================================================
+
+WITHOUT FIXTURES:
+--------------------------------------------------------------------------------
+Test 1 → new LoginPage() → new HomePage()
+Test 2 → new LoginPage() → new HomePage()
+Test 3 → new LoginPage() → new HomePage()
+
+Repeated code in every test.
+
+WITH FIXTURES:
+--------------------------------------------------------------------------------
+Fixture
+    ↓
+Creates LoginPage
+    ↓
+Creates HomePage
+    ↓
+All Tests Reuse Them
+
+Centralized object creation.
+
+
+================================================================================
+                    11. RELATION TO DEPENDENCY INJECTION (DI)
+================================================================================
+
+WITHOUT DEPENDENCY INJECTION:
+--------------------------------------------------------------------------------
+const loginPage = new LoginPage(page);
+// The test creates the object
+
+WITH DEPENDENCY INJECTION (Fixture Pattern):
+--------------------------------------------------------------------------------
+test('...', async ({ SFlogin }) => {
+    // Playwright creates the object and injects it into the test
+});
+
+
+================================================================================
+                    12. BENEFITS OF FIXTURE PATTERN
+================================================================================
+
+  • Eliminates duplicate object creation
+  • Centralizes initialization logic
+  • Produces cleaner test scripts
+  • Improves maintainability
+  • Simplifies dependency management
+  • Makes tests easier to read
+  • Supports automatic setup and cleanup
+  • Enables dependency injection
+
+
+================================================================================
+                    13. REAL-TIME ANALOGY
+================================================================================
+
+WITHOUT FIXTURE:
+--------------------------------------------------------------------------------
+A guest checks into a hotel and has to:
+  • Build the room
+  • Buy the bed
+  • Install the AC
+  • Arrange the furniture
+
+Only then can they stay.
+
+WITH FIXTURE:
+--------------------------------------------------------------------------------
+The hotel prepares the room before the guest arrives.
+
+The guest simply checks in and uses the room.
+
+Similarly, Playwright prepares the required page objects before the test begins.
+
+
+================================================================================
+                    14. BEST PRACTICE
+================================================================================
+
+Export the extended test and expect from the fixture file:
+
+import { test as base, expect } from '@playwright/test';
+
+export const test = base.extend<SalesforceFixture>({
+    // Custom Fixtures
+});
+
+export { expect };
+
+Then import the customized test in your test files instead of importing directly
+from @playwright/test.
+
+
+================================================================================
+                    KEY INTERVIEW QUESTIONS
+================================================================================
+
+Q1: What is a Fixture in Playwright?
+--------------------------------------------------------------------------------
+A Fixture is a reusable setup object or resource that Playwright creates before
+a test executes and automatically injects into the test.
+
+Q2: Why do we use Fixtures?
+--------------------------------------------------------------------------------
+To avoid duplicate setup code, centralize object creation, improve
+maintainability, and support dependency injection.
+
+Q3: What is the purpose of use()?
+--------------------------------------------------------------------------------
+use() passes the created fixture object to the test. Without calling use(),
+the fixture is created but never becomes available to the test.
+
+Q4: Is page a Fixture?
+--------------------------------------------------------------------------------
+Yes. page is one of Playwright's built-in fixtures. Custom fixtures often
+depend on it to create page objects.
+
+Q5: How is the Fixture Pattern related to Dependency Injection?
+--------------------------------------------------------------------------------
+Fixtures implement Dependency Injection by allowing Playwright to create and
+supply required objects to tests, rather than having tests instantiate those
+objects themselves.
+
+
+
+================================================================================
+              PLAYWRIGHT FRAMEWORK ARCHITECTURE – LEARNING NOTES
+================================================================================
+
+Topic: Integrating POM + Dependency Injection + Fixture Pattern + API Utility +
+       API-to-UI Flow
+
+
+================================================================================
+                    1. PAGE OBJECT MODEL (POM)
+================================================================================
+POM is used to separate UI interaction logic from the test logic.
+
+Instead of writing locators directly inside the test:
+  await page.getByRole("textbox", { name: "Username" }).fill(username);
+  await page.getByLabel("Password").fill(password);
+
+we create a Page Object:
+  export class LoginPage {
+      constructor(private page: Page) {}
+
+      async enterUsername(username: string) {
+          await this.page
+              .getByRole("textbox", { name: "Username" })
+              .fill(username);
+      }
+
+      async enterPassword(password: string) {
+          await this.page
+              .getByLabel("Password", { exact: true })
+              .fill(password);
+      }
+  }
+
+The test then becomes:
+  await SFlogin.enterUsername(username);
+  await SFlogin.enterPassword(password);
+
+MAIN PRINCIPLE:
+────────────────────────────────────────────────────────────────────────────────
+  Page Object contains UI implementation; Test contains business flow.
+
+OUR PAGE OBJECTS:
+────────────────────────────────────────────────────────────────────────────────
+pages/
+│
+├── login.ts
+├── home.ts
+└── lead.ts
+
+RESPONSIBILITIES:
+────────────────────────────────────────────────────────────────────────────────
+LoginPage:
+  Username, Password, Login
+
+HomePage:
+  App Launcher, View All, Search Apps
+
+LeadPage:
+  Search Leads, Lead-related actions
+
+
+================================================================================
+                    2. DEPENDENCY INJECTION (DI)
+================================================================================
+
+Our Page Objects need Playwright's Page object.
+
+Instead of creating the browser/page inside the Page Object, we INJECT the
+existing Page instance.
+
+  export class LoginPage {
+      constructor(private page: Page) {}
+  }
+
+Then:
+  const loginPage = new LoginPage(page);
+
+WHAT IS HAPPENING?
+────────────────────────────────────────────────────────────────────────────────
+Playwright Test Runner
+        │
+        │ creates/provides Page
+        ▼
+      page
+        │
+        │ injected
+        ▼
+   LoginPage(page)
+
+The constructor:
+  constructor(private page: Page) {}
+
+stores the received Page instance inside the object.
+
+IMPORTANT TERMINOLOGY:
+────────────────────────────────────────────────────────────────────────────────
+This: page: Page is NOT a global variable. It is an instance property.
+
+This: constructor(page: Page) is a constructor parameter.
+
+This: this.page = page means:
+  "Store the Page instance received from outside inside this Page Object."
+
+WHY DI IS USEFUL:
+────────────────────────────────────────────────────────────────────────────────
+The same Playwright Page can be passed through different Page Objects:
+
+Playwright Page
+      │
+      ├── LoginPage
+      │
+      ├── HomePage
+      │
+      └── LeadPage
+
+They are all operating on the same browser page/session.
+
+For example:
+  return new HomePage(this.page);
+
+does NOT create a new browser page. It creates a new HomePage object using the
+existing Playwright Page.
+
+
+================================================================================
+                    3. FIXTURE PATTERN
+================================================================================
+
+After understanding POM and DI, we introduced Playwright fixtures.
+
+PROBLEM WITHOUT FIXTURES:
+────────────────────────────────────────────────────────────────────────────────
+Every test would need to manually create objects:
+  const loginPage = new LoginPage(page);
+  const api = new SalesforceAPI(request);
+
+This makes tests responsible for object creation.
+
+FIXTURE SOLUTION:
+────────────────────────────────────────────────────────────────────────────────
+The fixture creates the objects and provides them to the test.
+
+  type SalesforceObjects = {
+      SFlogin: LoginPage;
+      SFapi: SalesforceAPI;
+  };
+
+Then:
+  export const test = baseTest.extend<SalesforceObjects>({
+      SFlogin: async ({ page }, use) => {
+          await page.goto("https://...salesforce.com/");
+          await use(new LoginPage(page));
+      },
+      SFapi: async ({ request }, use) => {
+          const api = new SalesforceAPI(request);
+          await api.generateToken();
+          await use(api);
+      }
+  });
+
+Now the test receives:
+  test("scenario", async ({ SFlogin, SFapi }) => {
+
+FIXTURE RESPONSIBILITY:
+────────────────────────────────────────────────────────────────────────────────
+The fixture is responsible for:
+  Setup → Create object → Inject dependency → Provide object to test
+
+IMPORTANT DISTINCTION:
+────────────────────────────────────────────────────────────────────────────────
+Fixture does NOT replace the constructor.
+
+Instead:
+  Fixture → page → new LoginPage(page) → LoginPage
+
+The constructor is still responsible for receiving the dependency.
+
+
+================================================================================
+                    4. API UTILITY / API SERVICE LAYER
+================================================================================
+
+Next, we integrated API testing into the framework.
+
+Initially, we had functions like:
+  generateToken(request)
+  createResource(request)
+  fetchResource(request)
+
+But we identified a problem with global variables:
+  let SF_Access_Token;
+  let appUrl;
+  let leadId;
+
+These create shared mutable state and are not a good design for parallel
+execution.
+
+So we moved toward an API class:
+  export class SalesforceAPI {
+      private SF_Access_Token!: string;
+      private appUrl!: string;
+
+      constructor(private request: APIRequestContext) {}
+  }
+
+API DEPENDENCY INJECTION:
+────────────────────────────────────────────────────────────────────────────────
+Just like:
+  LoginPage(page)
+
+we now have:
+  SalesforceAPI(request)
+
+So:
+  Playwright
+     │
+     ├── Page → LoginPage
+     │
+     └── APIRequestContext → SalesforceAPI
+
+API SERVICE RESPONSIBILITIES:
+────────────────────────────────────────────────────────────────────────────────
+
+Generate token:
+  await this.generateToken();
+  The token and instance URL are stored inside the API object.
+  generateToken() → accessToken, instanceUrl
+
+Create Lead:
+  const leadId = await SFapi.createResource();
+  The method returns the created Lead ID.
+
+Fetch Lead:
+  const lead = await SFapi.fetchResource(leadId);
+  The Lead ID is explicitly passed into the method.
+
+This is better than:
+  fetchResource() secretly depending on a global leadId.
+
+
+================================================================================
+                    5. API + UI TEST FLOW
+================================================================================
+
+This was the final integration we learned today.
+
+The goal was:
+  "Create test data using API and validate/use that data through the UI."
+
+The complete flow is:
+                    TEST
+                     │
+                     ▼
+              SalesforceAPI
+                     │
+                     ▼
+              Generate Token
+                     │
+                     ▼
+               Create Lead
+                     │
+                     ▼
+                  leadId
+                     │
+                     ▼
+               Fetch Lead
+                     │
+                     ▼
+                LastName
+                     │
+                     ▼
+                 UI Test
+                     │
+                     ▼
+                LoginPage
+                     │
+                     ▼
+                HomePage
+                     │
+                     ▼
+                LeadPage
+                     │
+                     ▼
+             Search LastName
+
+EXAMPLE:
+────────────────────────────────────────────────────────────────────────────────
+API creates a Lead:
+  const leadId = await SFapi.createResource();
+  leadId = "00Q123456"
+
+Then fetch:
+  const lead = await SFapi.fetchResource(leadId);
+
+Salesforce returns:
+  {
+      "FirstName": "Bhuvanesh",
+      "LastName": "M",
+      "Company": "Alphabet - ENG"
+  }
+
+Then:
+  const lastName = lead.LastName;
+
+Now:
+  API → "M" → UI → Search Leads → "M"
+
+
+================================================================================
+                    6. PAGE-TO-PAGE OBJECT TRANSITION
+================================================================================
+
+Another important learning from today's implementation was that Page Objects
+can return other Page Objects when the application navigates to another logical
+page.
+
+For example:
+  async clickLoginButton() {
+      await this.page
+          .getByRole("button", { name: "Log In" })
+          .click();
+      return new HomePage(this.page);
+  }
+
+So:
+  const homePage = await SFlogin.clickLoginButton();
+
+means:
+  LoginPage → Login → HomePage
+
+Similarly:
+  async openLeads() {
+       await this.page.
+            getByRole('link', { name: 'Leads', exact:true })
+            .click();
+
+      return new LeadPage(this.page);
+  }
+
+Then:
+  const leadPage = await homePage.openLeads();
+
+gives:
+  HomePage → Open Leads → LeadPage
+
+This keeps the Page Object model aligned with the application's navigation.
+
+
+================================================================================
+                    7. FINAL FRAMEWORK ARCHITECTURE
+================================================================================
+
+The architecture we arrived at today is:
+
+                         TEST
+                           │
+             ┌─────────────┴─────────────┐
+             │                           │
+             ▼                           ▼
+          UI FLOW                     API FLOW
+             │                           │
+             ▼                           ▼
+         SFlogin                       SFapi
+             │                           │
+             ▼                           ▼
+        LoginPage                  SalesforceAPI
+             │                           │
+             ▼                           ├── generateToken()
+        HomePage                         ├── createResource()
+             │                           └── fetchResource()
+             ▼
+        LeadPage
+
+And the dependencies are supplied by fixtures:
+                    FIXTURE
+                       │
+          ┌────────────┴────────────┐
+          │                         │
+          ▼                         ▼
+       { page }                  { request }
+          │                         │
+          ▼                         ▼
+     LoginPage                 SalesforceAPI
+
+
+================================================================================
+                    8. DESIGN PATTERNS / CONCEPTS USED
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Concept                    │ Purpose                                        │
+├────────────────────────────┼────────────────────────────────────────────────┤
+│ POM                        │ Encapsulate UI locators/actions               │
+│ Dependency Injection       │ Inject Page / APIRequestContext               │
+│ Fixture Pattern            │ Centralize setup and object creation          │
+│ API Service Layer          │ Encapsulate Salesforce API operations         │
+│ Page Object Transition     │ LoginPage → HomePage → LeadPage               │
+│ API + UI Integration       │ API creates data, UI validates/uses it        │
+│ Test Data Flow             │ leadId → Lead → LastName → UI                 │
+└────────────────────────────┴────────────────────────────────────────────────┘
+
+
+================================================================================
+                    9. IMPORTANT THINGS TO REMEMBER
+================================================================================
+
+POM:
+────────────────────────────────────────────────────────────────────────────────
+Test → Business flow
+Page Object → UI implementation
+
+DI:
+────────────────────────────────────────────────────────────────────────────────
+Don't create Page inside Page Object.
+Inject it: new LoginPage(page)
+
+Fixture:
+────────────────────────────────────────────────────────────────────────────────
+Fixture creates and supplies objects.
+Test consumes them.
+
+API Layer:
+────────────────────────────────────────────────────────────────────────────────
+Don't keep test state unnecessarily in global variables.
+Prefer:
+  createLead() → leadId
+  getLead(leadId) → lead
+
+Page Transition:
+────────────────────────────────────────────────────────────────────────────────
+LoginPage → HomePage
+HomePage → LeadPage
+
+API + UI:
+────────────────────────────────────────────────────────────────────────────────
+API → Create data → Get data → Extract required value → UI → Use/validate
+the data
+
+
+================================================================================
+                    10. ONE COMPLETE MENTAL MODEL
+================================================================================
+
+When designing this framework in the future, think in this order:
+
+1. POM
+   ↓
+   What UI pages do I have?
+
+2. DI
+   ↓
+   What dependencies do those pages need?
+
+3. FIXTURE
+   ↓
+   Who should create and provide those objects?
+
+4. API SERVICE
+   ↓
+   What backend operations should be reusable?
+
+5. API + UI FLOW
+   ↓
+   How does data created through API enter the UI test?
+
+THE FINAL PRINCIPLE:
+────────────────────────────────────────────────────────────────────────────────
+"POM manages UI behavior. DI supplies dependencies. Fixtures manage object
+creation/setup. API Service manages backend operations. The Test coordinates
+the business scenario and the data flow between API and UI."
+
+This is the core architecture you learned today and is a good reference model
+for extending your Playwright TypeScript framework.
+
+================================================================================
+              JIRA API INTEGRATION WITH PLAYWRIGHT – LEARNING NOTES
+================================================================================
+Reference site :  https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/#about
+
+Site url : https://id.atlassian.com/login
+
+User Name : bhuvanesh.moorthy@testleaf.com
+
+
+-----------------------Active Jira Project--------------------------------------
+
+Web url : https://testleaf-team-qp1ldfpz.atlassian.net/jira/project
+
+Description of Issue :
+Provides wrong GST calucation after selecting the supplier state
+
+================================================================================
+================================================================================
+1. WHAT IS JIRA?
+================================================================================
+
+Jira is an issue/project tracking tool from Atlassian used by software teams
+to manage and track:
+
+  • User Stories
+  • Bugs
+  • Tasks
+  • Epics
+  • Sub-tasks
+  • Sprints
+  • Releases
+
+For a QA/SDET, Jira is especially useful for tracking requirements, defects,
+test-related work, and development progress.
+
+
+2. WHY ARE WE USING JIRA?
+================================================================================
+
+In a real project, Jira is part of the overall software development workflow.
+
+For example:
+
+Business Requirement
+        ↓
+Jira Story / Task
+        ↓
+Development
+        ↓
+QA Testing
+        ↓
+Defect Found
+        ↓
+Bug Created in Jira
+        ↓
+Developer Fix
+        ↓
+Retesting
+        ↓
+Bug Closed
+
+Instead of manually creating Jira issues through the UI, we can use the
+Jira REST API to automate these operations.
+
+With Playwright API testing, we can:
+  • Create Jira issues
+  • Retrieve issues
+  • Update issues
+  • Add comments
+  • Search issues using JQL
+  • Validate issue details
+  • Chain multiple Jira API operations
+
+
+3. JIRA UI URL vs JIRA API URL
+================================================================================
+
+This distinction is important.
+
+JIRA UI:
+────────────────────────────────────────────────────────────────────────────────
+Example: {{protocol}}://{{host}}/browse/PWJAN-1
+
+This URL is used by a human to view the issue in the Jira application.
+
+Here: PWJAN-1 is the Jira issue key.
+
+JIRA REST API:
+────────────────────────────────────────────────────────────────────────────────
+For Jira Cloud REST API v3, API operations use endpoints under:
+  /rest/api/3/
+
+For example, creating an issue uses:
+  POST /rest/api/3/issue
+
+So:
+  Jira UI → /browse/PWJAN-1
+  Jira API → /rest/api/3/issue
+
+Do not confuse the UI URL with the API endpoint.
+
+
+4. JIRA REST API
+================================================================================
+
+Jira provides REST APIs that allow external applications and automation
+frameworks to interact with Jira programmatically.
+
+The basic architecture is:
+
+Playwright Test
+      │
+      │ HTTP Request
+      ▼
+Jira REST API
+      │
+      ▼
+Jira Application
+      │
+      ▼
+Issue / Project / User / Comment
+      │
+      ▼
+HTTP Response
+      │
+      ▼
+Playwright Assertions
+
+
+5. CREATING A JIRA BUG USING API
+================================================================================
+
+The REST API operation for creating an issue is:
+
+  POST /rest/api/3/issue
+
+The request contains a JSON request body.
+
+The basic structure is:
+  {
+    "fields": {
+      ...
+    }
+  }
+
+The fields object contains the information that needs to be stored in the
+Jira issue.
+
+
+6. REQUEST BODY ARCHITECTURE
+================================================================================
+
+A Jira issue creation payload can contain:
+
+Request Body
+│
+└── fields
+     │
+     ├── project
+     ├── issuetype
+     ├── summary
+     ├── description
+     ├── priority
+     ├── assignee
+     ├── reporter
+     ├── labels
+     ├── components
+     ├── fixVersions
+     ├── duedate
+     └── custom fields
+
+Not every field is mandatory.
+
+The required fields depend on the Jira project configuration and the
+issue-creation screen/field configuration.
+
+
+7. MINIMUM PAYLOAD TO CREATE A BUG
+================================================================================
+
+Conceptually, the important fields are:
+
+{
+  "fields": {
+    "project": {
+      "key": "PWJAN"
+    },
+    "issuetype": {
+      "name": "Bug"
+    },
+    "summary": "Main order flow broken",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Order entry fails when selecting supplier."
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
+IMPORTANT:
+────────────────────────────────────────────────────────────────────────────────
+Don't blindly copy a huge payload containing every possible Jira field.
+
+Start with the minimum required fields, verify that the issue is created, and
+then add additional fields as required.
+
+
+8. UNDERSTANDING project
+================================================================================
+
+Example:
+  "project": {
+    "key": "PWJAN"
+  }
+
+This tells Jira: "Create the issue inside the PWJAN project."
+
+The project key is the human-friendly identifier.
+
+For example: PWJAN-1 means:
+  Project Key → PWJAN
+  Issue Number → 1
+
+
+9. UNDERSTANDING issuetype
+================================================================================
+
+For creating a bug:
+  "issuetype": {
+    "name": "Bug"
+  }
+
+This tells Jira: "The issue being created is a Bug."
+
+Other issue types can include:
+  Bug
+  Story
+  Task
+  Epic
+  Sub-task
+
+The exact issue types available depend on the Jira project configuration.
+
+
+10. UNDERSTANDING summary
+================================================================================
+
+  "summary": "Main order flow broken"
+
+This is the title of the Jira issue.
+
+In the Jira UI:
+  Summary: Main order flow broken
+
+
+11. UNDERSTANDING description
+================================================================================
+
+Jira Cloud uses Atlassian Document Format (ADF) for rich-text fields.
+
+Instead of simply sending:
+  "description": "Order entry fails"
+
+the API can represent the description as:
+  "description": {
+    "type": "doc",
+    "version": 1,
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "Order entry fails when selecting supplier."
+          }
+        ]
+      }
+    ]
+  }
+
+The structure is:
+  description → document → paragraph → text
+
+The actual description is: "Order entry fails when selecting supplier."
+
+
+12. OTHER FIELDS OBSERVED IN THE JIRA PAYLOAD
+================================================================================
+
+ASSIGNEE:
+────────────────────────────────────────────────────────────────────────────────
+  "assignee": {
+    "id": "5b109f2e9729b51b54dc274d"
+  }
+Specifies the Jira user assigned to the issue.
+
+REPORTER:
+────────────────────────────────────────────────────────────────────────────────
+  "reporter": {
+    "id": "5b10a2844c20165700ede21g"
+  }
+Specifies the reporter.
+
+PRIORITY:
+────────────────────────────────────────────────────────────────────────────────
+  "priority": {
+    "id": "20000"
+  }
+Specifies the Jira priority. The actual meaning of the ID depends on the
+Jira instance.
+
+LABELS:
+────────────────────────────────────────────────────────────────────────────────
+  "labels": [
+    "bugfix",
+    "blitz_test"
+  ]
+Allows multiple tags to be associated with the issue.
+
+COMPONENTS:
+────────────────────────────────────────────────────────────────────────────────
+  "components": [
+    {
+      "id": "10000"
+    }
+  ]
+Associates the issue with Jira project components.
+
+FIX VERSION:
+────────────────────────────────────────────────────────────────────────────────
+  "fixVersions": [
+    {
+      "id": "10001"
+    }
+  ]
+Identifies the release/version where the issue is expected to be fixed.
+
+DUE DATE:
+────────────────────────────────────────────────────────────────────────────────
+  "duedate": "2026-04-25"
+Specifies the issue due date.
+
+
+13. CUSTOM FIELDS
+================================================================================
+
+Jira allows administrators to create custom fields.
+
+They appear in the API as:
+  customfield_10000
+  customfield_20000
+  customfield_30000
+  ...
+
+Example:
+  "customfield_10000": "11/Apr/26"
+
+The important point is:
+  "The custom field ID alone doesn't tell us what the field means."
+
+For example: customfield_10000 could represent one custom field in one Jira
+instance and have a completely different purpose in another instance.
+
+Therefore, use Jira metadata/API documentation to determine the actual field
+type and expected value.
+
+
+14. DIFFERENT JSON STRUCTURES FOR DIFFERENT FIELDS
+================================================================================
+
+A Jira payload may contain different JSON data structures.
+
+STRING:
+────────────────────────────────────────────────────────────────────────────────
+  "summary": "Main order flow broken"
+
+OBJECT:
+────────────────────────────────────────────────────────────────────────────────
+  "priority": {
+    "id": "20000"
+  }
+
+ARRAY:
+────────────────────────────────────────────────────────────────────────────────
+  "labels": [
+    "bugfix",
+    "blitz_test"
+  ]
+
+ADF OBJECT:
+────────────────────────────────────────────────────────────────────────────────
+  "description": {
+    "type": "doc",
+    "version": 1,
+    "content": []
+  }
+
+Therefore, when constructing an API payload, the field's API contract
+determines the JSON structure.
+
+
+15. update OBJECT
+================================================================================
+
+The payload can also contain:
+  "update": {}
+
+The update section is used for field update operations.
+
+For example:
+  {
+    "update": {
+      "labels": [
+        {
+          "add": "api-test"
+        }
+      ]
+    }
+  }
+
+This means: "Add the api-test label to the issue."
+
+If there are no update operations:
+  "update": {}
+
+
+16. INTEGRATING JIRA API WITH PLAYWRIGHT
+================================================================================
+
+Once we understand the Jira API, Playwright becomes the automation client.
+
+Basic structure:
+
+const response = await request.post(
+    `${baseURL}/rest/api/3/issue`,
+    {
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Basic ${token}`
+        },
+        data: {
+            fields: {
+                project: {
+                    key: "PWJAN"
+                },
+                issuetype: {
+                    name: "Bug"
+                },
+                summary: "Main order flow broken"
+            }
+        }
+    }
+);
+
+
+17. API RESPONSE
+================================================================================
+
+After creating the Jira issue, don't immediately assume the request succeeded.
+
+First validate the response.
+  expect(response.status()).toBe(201);
+
+Then read the response:
+  const body = await response.json();
+
+The response contains information about the newly created issue, such as its
+identifier/key.
+
+
+18. API VALIDATION FLOW
+================================================================================
+
+The overall Playwright flow should be:
+
+Send POST request
+       ↓
+Receive APIResponse
+       ↓
+Validate status
+       ↓
+Read response JSON
+       ↓
+Extract issue key / ID
+       ↓
+Perform next API operation
+       ↓
+Validate response
+
+Example:
+const response = await request.post(url, options);
+
+expect(response.status()).toBe(201);
+
+const body = await response.json();
+
+expect(body.id).toBeDefined();
+expect(body.key).toBeDefined();
+
+
+19. WHY RESPONSE VALIDATION COMES FIRST
+================================================================================
+
+Suppose you expect:
+  {
+    "id": "12345",
+    "key": "PWJAN-1"
+  }
+
+and directly write:
+  const body = await response.json();
+  const issueKey = body.key;
+
+If authentication fails, the response may instead be:
+  {
+    "errorMessages": [
+      "Unauthorized"
+    ]
+  }
+
+Therefore, validate the response before depending on its expected structure.
+
+
+20. API TESTING ARCHITECTURE
+================================================================================
+
+The complete architecture you've explored today can be represented as:
+
+                    JIRA
+                     │
+          ┌──────────┴──────────┐
+          │                     │
+       UI Layer             REST API
+          │                     │
+ /browse/PWJAN-1       /rest/api/3/issue
+                                │
+                                ▼
+                       Playwright API
+                                │
+                    ┌───────────┴───────────┐
+                    │                       │
+                 Request                Response
+                    │                       │
+               Headers                   Status
+               Payload                   Headers
+               Auth                      Body
+                                          │
+                                          ▼
+                                      Assertions
+                                          │
+                                          ▼
+                                    Test Result
+
+
+21. LEARNING FLOW TO FOLLOW IN FUTURE
+================================================================================
+
+When working with any Jira API, follow this sequence:
+
+1. Understand Jira
+       ↓
+2. Identify the Jira operation
+       ↓
+3. Find the REST API endpoint
+       ↓
+4. Understand HTTP method
+       ↓
+5. Understand authentication
+       ↓
+6. Understand request headers
+       ↓
+7. Understand request body
+       ↓
+8. Send request using Playwright
+       ↓
+9. Validate status code
+       ↓
+10. Parse response
+       ↓
+11. Extract required values
+       ↓
+12. Validate response body
+       ↓
+13. Chain the next API operation
+
+
+22. KEY CONCEPTS LEARNED TODAY
+================================================================================
+
+JIRA:
+────────────────────────────────────────────────────────────────────────────────
+Issue/project tracking platform used to manage software development work.
+
+JIRA REST API:
+────────────────────────────────────────────────────────────────────────────────
+Allows applications and automation frameworks to interact with Jira
+programmatically.
+
+UI URL:
+────────────────────────────────────────────────────────────────────────────────
+/browse/PWJAN-1
+Used to view an issue in the Jira application.
+
+API URL:
+────────────────────────────────────────────────────────────────────────────────
+/rest/api/3/issue
+Used to perform Jira operations programmatically.
+
+REQUEST BODY:
+────────────────────────────────────────────────────────────────────────────────
+Contains the information required to create/update the issue.
+
+fields:
+────────────────────────────────────────────────────────────────────────────────
+Contains Jira issue field values.
+
+issuetype:
+────────────────────────────────────────────────────────────────────────────────
+Determines whether the issue is a Bug, Story, Task, etc.
+
+ADF:
+────────────────────────────────────────────────────────────────────────────────
+Atlassian Document Format used for rich-text fields such as descriptions.
+
+CUSTOM FIELDS:
+────────────────────────────────────────────────────────────────────────────────
+Instance-specific fields represented as: customfield_xxxxx
+
+update:
+────────────────────────────────────────────────────────────────────────────────
+Used to specify field update operations.
+
+PLAYWRIGHT:
+────────────────────────────────────────────────────────────────────────────────
+Acts as the API client that sends requests and validates Jira responses.
+
+
+FINAL ARCHITECTURE TO REMEMBER
+================================================================================
+
+                    REQUIREMENT
+                         │
+                         ▼
+                       JIRA
+                         │
+                  Jira REST API
+                         │
+                         ▼
+                Playwright API Test
+                         │
+              ┌──────────┴──────────┐
+              │                     │
+           Request               Response
+              │                     │
+          ┌───┴───┐            ┌────┴────┐
+          │       │            │         │
+       Headers  Payload      Status     Body
+          │       │            │         │
+          └───┬───┘            └────┬────┘
+              │                     │
+              └──────────┬──────────┘
+                         ▼
+                     Assertions
+                         │
+                         ▼
+                    Test Result
+
+This is the core architecture to retain for future Jira API + Playwright work.
+
+================================================================================
+                              END OF DOCUMENT
+================================================================================
+
