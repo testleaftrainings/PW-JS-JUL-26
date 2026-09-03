@@ -1,0 +1,685 @@
+================================================================================
+                 JIRA API INTEGRATION WITH PLAYWRIGHT 
+================================================================================
+Reference site :  https://developer.atlassian.com/cloud/jira/platform/rest/v3/intro/#about
+
+Site url : https://id.atlassian.com/login
+
+User Name : bhuvanesh.moorthy@testleaf.com
+
+
+-----------------------Active Jira Project--------------------------------------
+
+Web url : https://testleaf-team-qp1ldfpz.atlassian.net/jira/project
+
+Description of Issue :
+Provides wrong GST calucation after selecting the supplier state
+
+================================================================================
+================================================================================
+1. WHAT IS JIRA?
+================================================================================
+
+Jira is an issue/project tracking tool from Atlassian used by software teams
+to manage and track:
+
+  • User Stories
+  • Bugs
+  • Tasks
+  • Epics
+  • Sub-tasks
+  • Sprints
+  • Releases
+
+For a QA/SDET, Jira is especially useful for tracking requirements, defects,
+test-related work, and development progress.
+
+
+2. WHY ARE WE USING JIRA?
+================================================================================
+
+In a real project, Jira is part of the overall software development workflow.
+
+For example:
+
+Business Requirement
+        ↓
+Jira Story / Task
+        ↓
+Development
+        ↓
+QA Testing
+        ↓
+Defect Found
+        ↓
+Bug Created in Jira
+        ↓
+Developer Fix
+        ↓
+Retesting
+        ↓
+Bug Closed
+
+Instead of manually creating Jira issues through the UI, we can use the
+Jira REST API to automate these operations.
+
+With Playwright API testing, we can:
+  • Create Jira issues
+  • Retrieve issues
+  • Update issues
+  • Add comments
+  • Search issues using JQL
+  • Validate issue details
+  • Chain multiple Jira API operations
+
+
+3. JIRA UI URL vs JIRA API URL
+================================================================================
+
+This distinction is important.
+
+JIRA UI:
+────────────────────────────────────────────────────────────────────────────────
+Example: {{protocol}}://{{host}}/browse/PWJAN-1
+
+This URL is used by a human to view the issue in the Jira application.
+
+Here: PWJAN-1 is the Jira issue key.
+
+JIRA REST API:
+────────────────────────────────────────────────────────────────────────────────
+For Jira Cloud REST API v3, API operations use endpoints under:
+  /rest/api/3/
+
+For example, creating an issue uses:
+  POST /rest/api/3/issue
+
+So:
+  Jira UI → /browse/PWJAN-1
+  Jira API → /rest/api/3/issue
+
+Do not confuse the UI URL with the API endpoint.
+
+
+4. JIRA REST API
+================================================================================
+
+Jira provides REST APIs that allow external applications and automation
+frameworks to interact with Jira programmatically.
+
+The basic architecture is:
+
+Playwright Test
+      │
+      │ HTTP Request
+      ▼
+Jira REST API
+      │
+      ▼
+Jira Application
+      │
+      ▼
+Issue / Project / User / Comment
+      │
+      ▼
+HTTP Response
+      │
+      ▼
+Playwright Assertions
+
+
+5. CREATING A JIRA BUG USING API
+================================================================================
+
+The REST API operation for creating an issue is:
+
+  POST /rest/api/3/issue
+
+The request contains a JSON request body.
+
+The basic structure is:
+  {
+    "fields": {
+      ...
+    }
+  }
+
+The fields object contains the information that needs to be stored in the
+Jira issue.
+
+
+6. REQUEST BODY ARCHITECTURE
+================================================================================
+
+A Jira issue creation payload can contain:
+
+Request Body
+│
+└── fields
+     │
+     ├── project
+     ├── issuetype
+     ├── summary
+     ├── description
+     ├── priority
+     ├── assignee
+     ├── reporter
+     ├── labels
+     ├── components
+     ├── fixVersions
+     ├── duedate
+     └── custom fields
+
+Not every field is mandatory.
+
+The required fields depend on the Jira project configuration and the
+issue-creation screen/field configuration.
+
+
+7. MINIMUM PAYLOAD TO CREATE A BUG
+================================================================================
+
+Conceptually, the important fields are:
+
+{
+  "fields": {
+    "project": {
+      "key": "PWJAN"
+    },
+    "issuetype": {
+      "name": "Bug"
+    },
+    "summary": "Main order flow broken",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [
+        {
+          "type": "paragraph",
+          "content": [
+            {
+              "type": "text",
+              "text": "Order entry fails when selecting supplier."
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+
+IMPORTANT:
+────────────────────────────────────────────────────────────────────────────────
+Don't blindly copy a huge payload containing every possible Jira field.
+
+Start with the minimum required fields, verify that the issue is created, and
+then add additional fields as required.
+
+
+8. UNDERSTANDING project
+================================================================================
+
+Example:
+  "project": {
+    "key": "PWJAN"
+  }
+
+This tells Jira: "Create the issue inside the PWJAN project."
+
+The project key is the human-friendly identifier.
+
+For example: PWJAN-1 means:
+  Project Key → PWJAN
+  Issue Number → 1
+
+
+9. UNDERSTANDING issuetype
+================================================================================
+
+For creating a bug:
+  "issuetype": {
+    "name": "Bug"
+  }
+
+This tells Jira: "The issue being created is a Bug."
+
+Other issue types can include:
+  Bug
+  Story
+  Task
+  Epic
+  Sub-task
+
+The exact issue types available depend on the Jira project configuration.
+
+
+10. UNDERSTANDING summary
+================================================================================
+
+  "summary": "Main order flow broken"
+
+This is the title of the Jira issue.
+
+In the Jira UI:
+  Summary: Main order flow broken
+
+
+11. UNDERSTANDING description
+================================================================================
+
+Jira Cloud uses Atlassian Document Format (ADF) for rich-text fields.
+
+Instead of simply sending:
+  "description": "Order entry fails"
+
+the API can represent the description as:
+  "description": {
+    "type": "doc",
+    "version": 1,
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "Order entry fails when selecting supplier."
+          }
+        ]
+      }
+    ]
+  }
+
+The structure is:
+  description → document → paragraph → text
+
+The actual description is: "Order entry fails when selecting supplier."
+
+
+12. OTHER FIELDS OBSERVED IN THE JIRA PAYLOAD
+================================================================================
+
+ASSIGNEE:
+────────────────────────────────────────────────────────────────────────────────
+  "assignee": {
+    "id": "5b109f2e9729b51b54dc274d"
+  }
+Specifies the Jira user assigned to the issue.
+
+REPORTER:
+────────────────────────────────────────────────────────────────────────────────
+  "reporter": {
+    "id": "5b10a2844c20165700ede21g"
+  }
+Specifies the reporter.
+
+PRIORITY:
+────────────────────────────────────────────────────────────────────────────────
+  "priority": {
+    "id": "20000"
+  }
+Specifies the Jira priority. The actual meaning of the ID depends on the
+Jira instance.
+
+LABELS:
+────────────────────────────────────────────────────────────────────────────────
+  "labels": [
+    "bugfix",
+    "blitz_test"
+  ]
+Allows multiple tags to be associated with the issue.
+
+COMPONENTS:
+────────────────────────────────────────────────────────────────────────────────
+  "components": [
+    {
+      "id": "10000"
+    }
+  ]
+Associates the issue with Jira project components.
+
+FIX VERSION:
+────────────────────────────────────────────────────────────────────────────────
+  "fixVersions": [
+    {
+      "id": "10001"
+    }
+  ]
+Identifies the release/version where the issue is expected to be fixed.
+
+DUE DATE:
+────────────────────────────────────────────────────────────────────────────────
+  "duedate": "2026-04-25"
+Specifies the issue due date.
+
+
+13. CUSTOM FIELDS
+================================================================================
+
+Jira allows administrators to create custom fields.
+
+They appear in the API as:
+  customfield_10000
+  customfield_20000
+  customfield_30000
+  ...
+
+Example:
+  "customfield_10000": "11/Apr/26"
+
+The important point is:
+  "The custom field ID alone doesn't tell us what the field means."
+
+For example: customfield_10000 could represent one custom field in one Jira
+instance and have a completely different purpose in another instance.
+
+Therefore, use Jira metadata/API documentation to determine the actual field
+type and expected value.
+
+
+14. DIFFERENT JSON STRUCTURES FOR DIFFERENT FIELDS
+================================================================================
+
+A Jira payload may contain different JSON data structures.
+
+STRING:
+────────────────────────────────────────────────────────────────────────────────
+  "summary": "Main order flow broken"
+
+OBJECT:
+────────────────────────────────────────────────────────────────────────────────
+  "priority": {
+    "id": "20000"
+  }
+
+ARRAY:
+────────────────────────────────────────────────────────────────────────────────
+  "labels": [
+    "bugfix",
+    "blitz_test"
+  ]
+
+ADF OBJECT:
+────────────────────────────────────────────────────────────────────────────────
+  "description": {
+    "type": "doc",
+    "version": 1,
+    "content": []
+  }
+
+Therefore, when constructing an API payload, the field's API contract
+determines the JSON structure.
+
+
+15. update OBJECT
+================================================================================
+
+The payload can also contain:
+  "update": {}
+
+The update section is used for field update operations.
+
+For example:
+  {
+    "update": {
+      "labels": [
+        {
+          "add": "api-test"
+        }
+      ]
+    }
+  }
+
+This means: "Add the api-test label to the issue."
+
+If there are no update operations:
+  "update": {}
+
+
+16. INTEGRATING JIRA API WITH PLAYWRIGHT
+================================================================================
+
+Once we understand the Jira API, Playwright becomes the automation client.
+
+Basic structure:
+
+const response = await request.post(
+    `${baseURL}/rest/api/3/issue`,
+    {
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Basic ${token}`
+        },
+        data: {
+            fields: {
+                project: {
+                    key: "PWJAN"
+                },
+                issuetype: {
+                    name: "Bug"
+                },
+                summary: "Main order flow broken"
+            }
+        }
+    }
+);
+
+
+17. API RESPONSE
+================================================================================
+
+After creating the Jira issue, don't immediately assume the request succeeded.
+
+First validate the response.
+  expect(response.status()).toBe(201);
+
+Then read the response:
+  const body = await response.json();
+
+The response contains information about the newly created issue, such as its
+identifier/key.
+
+
+18. API VALIDATION FLOW
+================================================================================
+
+The overall Playwright flow should be:
+
+Send POST request
+       ↓
+Receive APIResponse
+       ↓
+Validate status
+       ↓
+Read response JSON
+       ↓
+Extract issue key / ID
+       ↓
+Perform next API operation
+       ↓
+Validate response
+
+Example:
+const response = await request.post(url, options);
+
+expect(response.status()).toBe(201);
+
+const body = await response.json();
+
+expect(body.id).toBeDefined();
+expect(body.key).toBeDefined();
+
+
+19. WHY RESPONSE VALIDATION COMES FIRST
+================================================================================
+
+Suppose you expect:
+  {
+    "id": "12345",
+    "key": "PWJAN-1"
+  }
+
+and directly write:
+  const body = await response.json();
+  const issueKey = body.key;
+
+If authentication fails, the response may instead be:
+  {
+    "errorMessages": [
+      "Unauthorized"
+    ]
+  }
+
+Therefore, validate the response before depending on its expected structure.
+
+
+20. API TESTING ARCHITECTURE
+================================================================================
+
+The complete architecture you've explored today can be represented as:
+
+                    JIRA
+                     │
+          ┌──────────┴──────────┐
+          │                     │
+       UI Layer             REST API
+          │                     │
+ /browse/PWJAN-1       /rest/api/3/issue
+                                │
+                                ▼
+                       Playwright API
+                                │
+                    ┌───────────┴───────────┐
+                    │                       │
+                 Request                Response
+                    │                       │
+               Headers                   Status
+               Payload                   Headers
+               Auth                      Body
+                                          │
+                                          ▼
+                                      Assertions
+                                          │
+                                          ▼
+                                    Test Result
+
+
+21. LEARNING FLOW TO FOLLOW IN FUTURE
+================================================================================
+
+When working with any Jira API, follow this sequence:
+
+1. Understand Jira
+       ↓
+2. Identify the Jira operation
+       ↓
+3. Find the REST API endpoint
+       ↓
+4. Understand HTTP method
+       ↓
+5. Understand authentication
+       ↓
+6. Understand request headers
+       ↓
+7. Understand request body
+       ↓
+8. Send request using Playwright
+       ↓
+9. Validate status code
+       ↓
+10. Parse response
+       ↓
+11. Extract required values
+       ↓
+12. Validate response body
+       ↓
+13. Chain the next API operation
+
+
+22. KEY CONCEPTS LEARNED TODAY
+================================================================================
+
+JIRA:
+────────────────────────────────────────────────────────────────────────────────
+Issue/project tracking platform used to manage software development work.
+
+JIRA REST API:
+────────────────────────────────────────────────────────────────────────────────
+Allows applications and automation frameworks to interact with Jira
+programmatically.
+
+UI URL:
+────────────────────────────────────────────────────────────────────────────────
+/browse/PWJAN-1
+Used to view an issue in the Jira application.
+
+API URL:
+────────────────────────────────────────────────────────────────────────────────
+/rest/api/3/issue
+Used to perform Jira operations programmatically.
+
+REQUEST BODY:
+────────────────────────────────────────────────────────────────────────────────
+Contains the information required to create/update the issue.
+
+fields:
+────────────────────────────────────────────────────────────────────────────────
+Contains Jira issue field values.
+
+issuetype:
+────────────────────────────────────────────────────────────────────────────────
+Determines whether the issue is a Bug, Story, Task, etc.
+
+ADF:
+────────────────────────────────────────────────────────────────────────────────
+Atlassian Document Format used for rich-text fields such as descriptions.
+
+CUSTOM FIELDS:
+────────────────────────────────────────────────────────────────────────────────
+Instance-specific fields represented as: customfield_xxxxx
+
+update:
+────────────────────────────────────────────────────────────────────────────────
+Used to specify field update operations.
+
+PLAYWRIGHT:
+────────────────────────────────────────────────────────────────────────────────
+Acts as the API client that sends requests and validates Jira responses.
+
+
+FINAL ARCHITECTURE TO REMEMBER
+================================================================================
+
+                    REQUIREMENT
+                         │
+                         ▼
+                       JIRA
+                         │
+                  Jira REST API
+                         │
+                         ▼
+                Playwright API Test
+                         │
+              ┌──────────┴──────────┐
+              │                     │
+           Request               Response
+              │                     │
+          ┌───┴───┐            ┌────┴────┐
+          │       │            │         │
+       Headers  Payload      Status     Body
+          │       │            │         │
+          └───┬───┘            └────┬────┘
+              │                     │
+              └──────────┬──────────┘
+                         ▼
+                     Assertions
+                         │
+                         ▼
+                    Test Result
+
+This is the core architecture to retain for future Jira API + Playwright work.
+
+================================================================================
+                              END OF DOCUMENT
+================================================================================
+
