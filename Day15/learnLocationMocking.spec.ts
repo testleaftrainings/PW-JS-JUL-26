@@ -1,0 +1,31 @@
+import test from "@playwright/test";
+//Bombay IIT, 19.1326° N, 72.9110° E
+//Kanpur IIT, 26° 30' 47.3519" N, 80° 13' 58.4789" E
+const locations = [{
+    locationName: 'Bombay IIT',
+    lat: 19.1326,
+    long: 72.9110
+},
+{
+    locationName: 'Delhi IIT',
+    lat: 28.5450,
+    long: 77.1922
+}]
+
+for (const location of locations) {
+    test.describe.serial("Multiple geolocation testing", async () => {
+        test.use({
+            geolocation: {
+                latitude: location.lat,
+                longitude: location.long
+            }, permissions: ['geolocation']
+        })
+        test(`Learn Geo mocking using proxy latitude and longtidue -${location.locationName}`, async ({ page }) => {
+            await page.goto("https://my-location.org/")
+            const mapView = page.locator(`//div[@id='map']`)
+            await mapView.scrollIntoViewIfNeeded()
+            mapView.screenshot({ path: `screeshot/${location.locationName}.png` })
+            await page.waitForTimeout(3000)
+        })// test function scope ends here
+    })// describe function scope ends here
+} // boundary of foreach loop scope ends here
