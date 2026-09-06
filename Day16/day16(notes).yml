@@ -1,0 +1,1780 @@
+📑 Agenda – Day 16 | Playwright Hybrid Framework
+⏱ Total Duration: 4 Hours
+
+
+================================================================================
+                    PLAYWRIGHT ADVANCED FEATURES HANDBOOK - PART 1
+================================================================================
+
+Topics Covered:
+  1. MCP (Model Context Protocol)
+  2. Playwright CLI
+
+
+================================================================================
+                    1. MCP (MODEL CONTEXT PROTOCOL)
+================================================================================
+
+WHAT IS MCP?
+--------------------------------------------------------------------------------
+Model Context Protocol (MCP) is an open protocol that enables Large Language
+Models (LLMs) to securely communicate with external tools, applications, APIs,
+databases, browsers, and file systems.
+
+It acts as a standard bridge between AI models and external systems.
+
+DEFINITION:
+  MCP is a standardized protocol that allows AI models to discover and interact
+  with external tools without requiring custom integrations for every
+  application.
+
+WHY WAS MCP INTRODUCED?
+--------------------------------------------------------------------------------
+Before MCP, every AI application required its own custom integration.
+
+Example:
+ChatGPT ----> Jira
+ChatGPT ----> GitHub
+ChatGPT ----> Playwright
+ChatGPT ----> Database
+ChatGPT ----> Browser
+
+Every integration required custom code.
+
+With MCP:
+                 MCP
+                 │
+      ┌──────────┼──────────┐
+      ▼          ▼          ▼
+   Jira      Playwright   GitHub
+      ▼          ▼          ▼
+
+Now AI only needs to understand MCP.
+
+WHY IS MCP IMPORTANT?
+--------------------------------------------------------------------------------
+Without MCP:
+  • Custom Integrations
+  • Different APIs
+  • Vendor Lock-in
+  • More Development Effort
+
+With MCP:
+  • Standard Communication
+  • Plug-and-Play Tools
+  • Reusable Connectors
+  • Better AI Agent Ecosystem
+
+MCP ARCHITECTURE:
+--------------------------------------------------------------------------------
+          User
+            │
+            ▼
+      LLM (ChatGPT)
+            │
+            ▼
+      MCP Client
+            │
+            ▼
+      MCP Server
+            │
+ ┌──────────┼──────────┐
+ ▼          ▼          ▼
+Playwright  GitHub   Database
+ ▼          ▼          ▼
+Browser     Repo      Data
+
+COMPONENTS OF MCP:
+--------------------------------------------------------------------------------
+1. MCP Client:
+   The client sends requests from the AI model.
+   Examples: ChatGPT, Claude Desktop, VS Code AI Agent, GitHub Copilot Agent
+
+2. MCP Server:
+   Provides tools and resources.
+   Examples: Playwright MCP Server, GitHub MCP Server, Filesystem MCP Server
+
+3. Tools:
+   Executable operations.
+   Examples: Click Button, Create Issue, Execute SQL, Read File
+
+4. Resources:
+   Static or dynamic information.
+   Examples: Files, Logs, PDFs, Source Code, API Documentation
+
+5. Prompts:
+   Reusable instructions.
+   Examples: Generate Playwright Test, Review Code, Create API Test
+
+HOW DOES MCP WORK?
+--------------------------------------------------------------------------------
+Suppose user asks: "Login into Salesforce and verify Accounts page."
+
+Architecture:
+User → ChatGPT → Planner → Playwright MCP → Browser → Execute Test → Result → LLM → User
+
+MCP WORKFLOW:
+--------------------------------------------------------------------------------
+Prompt → Planner → Tool Selection → MCP Server → Execute Tool → Collect Result → LLM Response
+
+MCP WITH PLAYWRIGHT:
+--------------------------------------------------------------------------------
+Playwright MCP exposes browser capabilities as tools.
+
+Available Tools:
+  • Open Browser
+  • Click
+  • Fill
+  • Type
+  • Screenshot
+  • Read DOM
+  • Execute JavaScript
+
+Instead of generating code, LLM directly controls browser.
+
+TRADITIONAL PLAYWRIGHT:
+--------------------------------------------------------------------------------
+Developer → Writes Code → Execute Test
+
+MCP PLAYWRIGHT:
+--------------------------------------------------------------------------------
+User → LLM → MCP → Browser
+
+No manual scripting required for simple workflows.
+
+REAL-TIME USE CASES:
+--------------------------------------------------------------------------------
+QA Engineer:
+  Prompt: "Open Salesforce, Login, Create Lead, Verify Success"
+  LLM executes browser.
+
+Code Generation:
+  Generate Playwright Tests.
+
+Self-Healing:
+  Broken Locator → LLM detects → Suggests new locator
+
+Test Planning:
+  Requirement → Generate Test Cases → Generate Automation
+
+Accessibility Testing:
+  AI inspects page and suggests improvements.
+
+ENTERPRISE USE CASES:
+--------------------------------------------------------------------------------
+  • Browser Automation
+  • GitHub Automation
+  • Jira Ticket Creation
+  • API Testing
+  • Database Validation
+  • Log Analysis
+  • DevOps Pipelines
+
+API vs MCP:
+--------------------------------------------------------------------------------
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ API                         │ MCP                                          │
+├─────────────────────────────┼──────────────────────────────────────────────┤
+│ Application-specific        │ Standard Protocol                            │
+│ Manual Integration          │ Plug-and-Play                                │
+│ Fixed Contract              │ Tool Discovery                               │
+│ Developer Controlled        │ AI Controlled                                │
+└─────────────────────────────┴──────────────────────────────────────────────┘
+
+BEST PRACTICES:
+--------------------------------------------------------------------------------
+  ✅ Keep tools small and reusable
+  ✅ Return structured responses
+  ✅ Secure tool access
+  ✅ Use least privilege
+  ✅ Validate tool inputs
+
+COMMON MISTAKES:
+--------------------------------------------------------------------------------
+  ❌ Exposing unnecessary tools
+  ❌ Returning unstructured data
+  ❌ Giving AI unrestricted access
+
+INTERVIEW QUESTIONS:
+--------------------------------------------------------------------------------
+Q1: What is MCP?
+  MCP is a standard protocol that enables AI models to communicate with
+  external tools and applications.
+
+Q2: Why is MCP important?
+  It eliminates the need for custom integrations between every AI model and
+  every application.
+
+Q3: What are the main components of MCP?
+  Client, Server, Tools, Resources, Prompts
+
+Q4: How does Playwright MCP differ from traditional Playwright?
+  Traditional Playwright requires manually written automation scripts.
+  Playwright MCP allows an LLM to control the browser through exposed tools
+  without manually writing code for every interaction.
+
+Q5: Can MCP replace Playwright?
+  No. MCP is a communication protocol. Playwright is a browser automation
+  framework. Playwright can be one of the tools exposed through MCP.
+
+KEY TAKEAWAYS:
+--------------------------------------------------------------------------------
+  • MCP is a protocol, not a testing framework.
+  • It standardizes communication between AI and external systems.
+  • Playwright can act as an MCP Server.
+  • MCP enables AI-powered browser automation.
+  • MCP is becoming the foundation for AI Agents.
+
+================================================================================
+                             2. PLAYWRIGHT CLI 
+================================================================================
+
+
+1. WHAT IS PLAYWRIGHT CLI?
+================================================================================
+
+Playwright CLI is a command-line interface developed by the Playwright team to
+help AI coding agents (such as GitHub Copilot and Claude Code) interact with
+web applications efficiently.
+
+Instead of exposing browser actions through the Model Context Protocol (MCP),
+Playwright CLI provides lightweight command-line operations that reduce token
+consumption and improve performance for AI-assisted development.
+
+
+2. PURPOSE OF PLAYWRIGHT CLI
+================================================================================
+
+Playwright CLI enables AI agents to:
+  • Launch browsers
+  • Navigate to web applications
+  • Inspect web pages
+  • Capture page snapshots
+  • Discover elements
+  • Generate accurate locators
+  • Capture screenshots
+  • Assist in generating Playwright automation
+
+It is designed to improve AI-assisted browser interaction while keeping
+communication lightweight.
+
+
+3. ARCHITECTURE
+================================================================================
+
+Developer
+      │
+      ▼
+GitHub Copilot Agent
+      │
+      ▼
+Playwright CLI
+      │
+      ▼
+Browser
+
+The Copilot Agent decides what to do, while Playwright CLI performs the browser
+interactions.
+
+
+4. GITHUB COPILOT AGENT vs PLAYWRIGHT CLI
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ GitHub Copilot Agent         │ Playwright CLI                              │
+├───────────────────────────────┼─────────────────────────────────────────────┤
+│ AI reasoning engine          │ Browser interaction tool                    │
+│ Understands natural language │ Executes browser commands                   │
+│ Generates Playwright code    │ Inspects live web pages                     │
+│ Creates files                │ Does not generate project files             │
+│ Plans workflow               │ Returns browser state and snapshots         │
+│ Fixes code                   │ Provides browser information                │
+└───────────────────────────────┴─────────────────────────────────────────────┘
+
+KEY POINT:
+Copilot Agent is the BRAIN, while Playwright CLI acts as the BROWSER
+INTERACTION LAYER.
+
+
+5. PLAYWRIGHT CLI vs PLAYWRIGHT MCP
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Playwright CLI                 │ Playwright MCP                            │
+├────────────────────────────────┼────────────────────────────────────────────┤
+│ Uses command-line commands     │ Uses Model Context Protocol               │
+│ Lightweight                    │ Rich tool interface                       │
+│ Lower token consumption        │ Higher token consumption                  │
+│ Optimized for coding agents    │ Optimized for tool interoperability       │
+│ Browser automation through CLI │ Browser automation through MCP tools     │
+│ Excellent for code generation  │ Excellent for autonomous agent workflows  │
+└────────────────────────────────┴────────────────────────────────────────────┘
+
+
+6. PLAYWRIGHT CLI vs PLAYWRIGHT TEST
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Playwright Test              │ Playwright CLI                              │
+├──────────────────────────────┼─────────────────────────────────────────────┤
+│ Automation framework         │ AI browser interaction tool                 │
+│ Generates and executes tests │ Helps AI inspect applications               │
+│ Project dependency           │ Developer tool                              │
+│ Installed per project        │ Typically installed once per machine or     │
+│                              │ invoked via npx                             │
+└──────────────────────────────┴─────────────────────────────────────────────┘
+
+
+7. RELATIONSHIP BETWEEN PLAYWRIGHT CLI AND PLAYWRIGHT TEST
+================================================================================
+
+A Playwright automation project still requires:
+
+npm init playwright@latest
+
+This creates:
+  • package.json
+  • playwright.config.ts
+  • tests/
+  • node_modules/
+
+Playwright CLI is NOT a replacement for Playwright Test.
+
+Instead, it helps AI agents inspect the application and generate better
+automation code for your Playwright project.
+
+
+8. INSTALLATION
+================================================================================
+
+CREATE A PLAYWRIGHT PROJECT:
+--------------------------------------------------------------------------------
+npm init playwright@latest
+
+UPDATE PLAYWRIGHT:
+--------------------------------------------------------------------------------
+npm install -D @playwright/test@latest
+
+INSTALL PLAYWRIGHT CLI (GLOBAL):
+--------------------------------------------------------------------------------
+
+Run `npm install -g @playwright/cli@latest` (global) or            ║
+║ `npm install --save-dev @playwright/cli@latest` (local) to update.
+
+> Alternatively, you can invoke it using npx without installing it globally.
+
+
+9. INSTALLING SKILLS
+================================================================================
+
+Install Playwright CLI skills for GitHub Copilot:
+
+playwright-cli install --skills
+
+These skills help Copilot understand how to use Playwright CLI effectively.
+
+
+10. TYPICAL WORKFLOW
+================================================================================
+
+Create Workspace
+        │
+        ▼
+Initialize Playwright
+        │
+        ▼
+Install Playwright CLI
+        │
+        ▼
+Install CLI Skills
+        │
+        ▼
+Planner Agent
+        │
+        ▼
+Generator Agent
+        │
+        ▼
+Playwright CLI
+        │
+        ▼
+Browser
+        │
+        ▼
+Generate Code
+        │
+        ▼
+Run Tests
+        │
+        ▼
+Healer Agent
+        │
+        ▼
+Fix Issues
+
+
+11. PLANNER → GENERATOR → HEALER WORKFLOW
+================================================================================
+
+PLANNER AGENT:
+--------------------------------------------------------------------------------
+Responsibilities:
+  • Analyze requirements
+  • Identify pages
+  • Define workflow
+  • Determine validations
+  • Create execution plan
+
+Does NOT generate code.
+
+GENERATOR AGENT:
+--------------------------------------------------------------------------------
+Responsibilities:
+  • Generate Page Objects
+  • Generate Test Scripts
+  • Create framework files
+  • Use Playwright CLI to inspect the application
+  • Produce production-ready automation
+
+HEALER AGENT:
+--------------------------------------------------------------------------------
+Responsibilities:
+  • Analyze failures
+  • Inspect the application using Playwright CLI
+  • Fix locators
+  • Resolve synchronization issues
+  • Update only the affected code
+
+
+12. CHECKING PLAYWRIGHT CLI INSTALLATION
+================================================================================
+
+CHECK VERSION:
+--------------------------------------------------------------------------------
+playwright-cli --version
+
+LIST GLOBAL PACKAGES:
+--------------------------------------------------------------------------------
+npm list -g --depth=0
+
+LOCATE THE EXECUTABLE:
+--------------------------------------------------------------------------------
+Windows: where playwright-cli
+Linux/macOS: which playwright-cli
+
+
+13. IMPORTANT CONCEPTS
+================================================================================
+
+  • Playwright CLI is NOT a testing framework.
+  • It is NOT a replacement for Playwright Test.
+  • It is a browser interaction tool for AI coding assistants.
+  • It improves AI-assisted code generation by allowing live page inspection.
+  • It is optimized for lower token usage compared to MCP-based browser
+    interactions.
+
+
+14. BEST PRACTICES
+================================================================================
+
+  • Create a Playwright project using npm init playwright@latest
+  • Keep @playwright/test as a project dependency
+  • Install or invoke Playwright CLI separately for AI-assisted workflows
+  • Use Planner Agent before code generation
+  • Generate code only after validating the planner output
+  • Use Healer Agent only when the generated code fails
+  • Prefer Playwright-recommended locators
+  • Avoid hard waits (page.waitForTimeout())
+  • Follow the Page Object Model (POM) for maintainable automation
+
+
+15. QUICK COMPARISON
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Feature               │ Playwright Test │ Playwright CLI │ Playwright MCP │ GitHub Copilot Agent │
+├───────────────────────┼─────────────────┼────────────────┼────────────────┼──────────────────────┤
+│ Purpose               │ Test Automation │ Browser        │ Browser Tool   │ AI Coding Assistant  │
+│                       │ Framework       │ Interaction    │ Server         │                      │
+│                       │                 │ Tool           │                │                      │
+│ Generates Code        │ No              │ No             │ No             │ Yes                  │
+│ Browser Automation    │ Yes             │ Yes            │ Yes            │ Through CLI or MCP   │
+│ Installed Per Project │ Yes             │ No (global or  │ Depends on     │ Extension/IDE        │
+│                       │                 │ via npx)       │ MCP client     │                      │
+│ Token Efficient       │ N/A             │ High           │ Moderate       │ Depends on tool      │
+│ Primary Users         │ Automation      │ AI Coding      │ AI Agents      │ Developers           │
+│                       │ Engineers       │ Agents         │                │                      │
+└───────────────────────┴─────────────────┴────────────────┴────────────────┴──────────────────────┘
+
+
+16. Reference Command :
+================================================================================
+Launch a headed browser: playwright-cli open https://leaftaps.com --headed
+Capture the Current Page : playwright-cli snapshot
+Interact with the Application:
+
+Fill the username: playwright-cli fill e13 democsr
+Fill the password: playwright-cli fill e15 crmsfa
+Click Login: playwright-cli click e18
+
+Take a Screenshot: playwright-cli screenshot
+View Active Sessions: playwright-cli show
+
+Close All Sessions(If you have multiple browser sessions running)
+                   : playwright-cli close-all
+Force Kill All Sessions(If a browser becomes unresponsive):
+                   : playwright-cli kill-all
+
+
+
+
+
+================================================================================
+                            KEY TAKEAWAYS
+================================================================================
+
+  • GitHub Copilot Agent is the reasoning engine that understands requirements
+    and generates code.
+
+  • Playwright CLI is a lightweight browser interaction tool optimized for AI
+    coding assistants.
+
+  • Playwright MCP exposes browser capabilities through the Model Context
+    Protocol for richer, tool-based agent workflows.
+
+  • Playwright Test remains the automation framework used to build and execute
+    your tests.
+
+  • For AI-assisted Playwright development, a common workflow is:
+
+        Planner Agent
+              │
+        Generator Agent
+              │
+        Playwright CLI
+              │
+        Browser
+              │
+        Healer Agent
+
+================================================================================
+                    PLAYWRIGHT ADVANCED FEATURES HANDBOOK - PART 2
+================================================================================
+
+================================================================================
+                    GITHUB ACTIONS WITH PLAYWRIGHT 
+================================================================================
+
+
+1. THE STORY BEHIND GITHUB ACTIONS AND PLAYWRIGHT
+================================================================================
+
+Before learning GitHub Actions, it is important to understand WHY Microsoft
+built Playwright and how GitHub Actions fits into the automation ecosystem.
+
+THE EVOLUTION OF CI/CD:
+--------------------------------------------------------------------------------
+As software development evolved, manually building, testing, and deploying
+applications became inefficient. Organizations started adopting Continuous
+Integration (CI) and Continuous Deployment (CD) pipelines to automate these
+activities.
+
+Several CI/CD tools emerged:
+  • Jenkins
+  • GitHub Actions
+  • GitLab CI/CD
+  • CircleCI
+  • Bamboo
+  • Azure DevOps Pipelines[microsoft]--> Pipeline,repos,plan,..etc
+
+These tools automate repetitive tasks such as building applications, executing
+automated tests, generating reports, and deploying software.
+
+CLOUD BROWSER EXECUTION BECAME THE FUTURE:
+--------------------------------------------------------------------------------
+Around a decade ago, executing browser automation tests on local machines
+became increasingly difficult due to:
+  • Multiple browser versions
+  • Multiple operating systems
+  • Device compatibility
+  • Infrastructure maintenance
+
+Companies started moving browser execution to the cloud.
+
+Leaders in this space:
+  • Sauce Labs
+  • BrowserStack
+  • LambdaTest
+
+These platforms provided cloud-hosted browsers where Selenium automation
+scripts could be executed without maintaining local infrastructure.
+
+MICROSOFT'S PERSPECTIVE:
+--------------------------------------------------------------------------------
+Microsoft observed that browser automation workloads were continuously
+increasing. Since Microsoft owns Azure, it wanted browser execution workloads
+to run within its own cloud ecosystem instead of depending entirely on
+third-party services.
+
+Rather than simply integrating with existing tools, Microsoft wanted complete
+control over:
+  • Browser automation
+  • Cloud execution
+  • Developer experience
+  • CI/CD integration
+
+WHY NOT CONTINUE WITH SELENIUM?
+--------------------------------------------------------------------------------
+Selenium was already the industry-standard automation framework. However,
+Selenium was designed as a browser automation protocol rather than a modern
+automation framework.
+
+Microsoft wanted something that could provide:
+  • Faster execution
+  • Better stability
+  • Modern APIs
+  • Built-in waiting mechanisms
+  • Better developer productivity
+
+WHY NOT CYPRESS?
+--------------------------------------------------------------------------------
+Microsoft also evaluated Cypress. Although Cypress provided an excellent
+developer experience, Microsoft wanted a framework that:
+  • Supported multiple browsers equally
+  • Could automate modern enterprise applications
+  • Supported multiple tabs and windows
+  • Worked across Chromium, Firefox, and WebKit
+  • Could be completely open source
+
+BUILDING PLAYWRIGHT:
+--------------------------------------------------------------------------------
+Microsoft hired experienced browser engineers, including developers who had
+previously worked on Chromium-related projects.
+
+The goal was simple: Build a modern browser automation framework designed for
+today's web applications.
+
+This framework eventually became Playwright.
+
+Playwright introduced:
+  • Auto Waiting
+  • Auto Retry
+  • Cross-browser support
+  • Cross-platform execution
+  • Faster execution
+  • Reliable locators
+  • Better debugging capabilities
+
+GITHUB + PLAYWRIGHT:
+--------------------------------------------------------------------------------
+Microsoft also owns GitHub.
+
+Instead of asking developers to install dedicated CI servers like Jenkins,
+Microsoft integrated Playwright directly with GitHub Actions.
+
+This created a complete ecosystem:
+  • Source Code → GitHub
+  • Automation → Playwright
+  • CI/CD → GitHub Actions
+  • Cloud → Azure
+
+Everything works together seamlessly.
+
+
+2. WHAT IS GITHUB ACTIONS?
+================================================================================
+
+GitHub Actions is GitHub's built-in Continuous Integration and Continuous
+Deployment (CI/CD) platform.
+
+It automates software development workflows whenever specific events occur
+inside a GitHub repository.
+
+Examples include:
+  • Code Push
+  • Pull Request
+  • Scheduled Execution
+  • Manual Execution
+
+Instead of manually executing Playwright tests after every code change, GitHub
+Actions performs these tasks automatically.
+
+
+3. WHY USE GITHUB ACTIONS?
+================================================================================
+
+GitHub Actions provides several advantages:
+  • No additional CI server installation
+  • Direct integration with GitHub repositories
+  • Cloud-hosted execution
+  • Automatic Playwright test execution
+  • Easy artifact management
+  • Supports Linux, Windows, and macOS
+  • Highly scalable
+  • Free usage for public repositories
+
+
+4. CI/CD PIPELINE TOOLS
+================================================================================
+
+Popular CI/CD tools include:
+  • Jenkins
+  • GitHub Actions
+  • GitLab CI/CD
+  • CircleCI
+  • Bamboo
+  • Azure DevOps Pipelines
+
+Among these, GitHub Actions is widely adopted because it is built directly into
+GitHub and requires minimal configuration.
+
+
+5. PREREQUISITES
+================================================================================
+
+Before using GitHub Actions:
+  • Create a GitHub account
+  • Create a GitHub repository (preferably Public for learning)
+  • Install Git
+  • Install Visual Studio Code
+  • Install Node.js
+  • Create or clone a Playwright project
+
+
+6. CONNECT VS CODE WITH GITHUB REPOSITORY
+================================================================================
+
+Initialize Git:
+git init
+
+Add the remote repository:
+git remote add origin https://github.com/<username>/<repository>.git
+
+Verify the connection:
+git remote -v
+
+
+7. CREATE THE GITHUB WORKFLOW
+================================================================================
+
+Inside the project create the following directory structure:
+
+.github/
+    workflows/
+        playwright.yml
+
+Every workflow is stored inside the .github/workflows directory.
+
+
+8. WHAT IS A WORKFLOW?
+================================================================================
+
+A Workflow is a YAML configuration file that defines the automation process.
+
+It specifies:
+  • When the workflow should execute
+  • Where it should execute
+  • What steps should be performed
+
+Example:
+name: Playwright Tests
+
+
+9. WORKFLOW COMPONENTS
+================================================================================
+
+A GitHub Actions workflow consists of five fundamental components:
+
+WORKFLOW:
+  The automation definition.
+
+EVENT:
+  The trigger that starts the workflow.
+  Example: on: push:
+
+JOB:
+  A collection of related tasks executed on the same machine.
+  Example: jobs:
+
+RUNNER:
+  The virtual machine where the job executes.
+  Example: runs-on: ubuntu-latest
+
+STEPS:
+  Individual actions or commands executed sequentially.
+  Example: steps:
+
+
+10. PLAYWRIGHT WORKFLOW
+================================================================================
+
+A typical Playwright workflow performs the following tasks:
+  1. Checkout Repository
+  2. Install Node.js
+  3. Install Dependencies
+  4. Install Playwright Browsers
+  5. Execute Tests
+  6. Generate HTML Report
+  7. Upload Report
+
+Example:
+name: Playwright Tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      - run: npx playwright install --with-deps
+
+      - run: npx playwright test
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+
+
+11. PUSH CODE TO GITHUB
+================================================================================
+
+Commit the changes:
+git add .
+git commit -m "Added GitHub Actions workflow"
+
+Push the code:
+git push -u origin main
+
+Every subsequent push automatically triggers the workflow.
+
+
+12. WHAT HAPPENS AFTER A PUSH?
+================================================================================
+
+Once code is pushed:
+
+Developer
+      │
+      ▼
+Git Push
+      │
+      ▼
+GitHub Repository
+      │
+      ▼
+GitHub detects the Push Event
+      │
+      ▼
+GitHub Actions starts the Workflow
+      │
+      ▼
+Creates a Virtual Machine (Runner)
+      │
+      ▼
+Checks out the Repository
+      │
+      ▼
+Installs Node.js
+      │
+      ▼
+Installs Project Dependencies
+      │
+      ▼
+Installs Playwright Browsers
+      │
+      ▼
+Executes Playwright Tests
+      │
+      ▼
+Generates HTML Report
+      │
+      ▼
+Uploads Report as an Artifact
+
+
+13. VIEWING THE RESULTS
+================================================================================
+
+Navigate to:
+Repository → Actions
+
+Open the latest workflow execution.
+
+You can inspect:
+  • Checkout logs
+  • Dependency installation logs
+  • Browser installation logs
+  • Test execution logs
+  • Failed test details
+  • Passed test details
+
+
+14. DOWNLOADING REPORTS
+================================================================================
+
+After the workflow completes successfully:
+Actions → Workflow Run → Artifacts → playwright-report.zip
+
+Download the ZIP file. Extract it. Open index.html to view the Playwright
+HTML Report.
+
+
+15. REAL-WORLD USE CASE
+================================================================================
+
+In a real software project, every code push automatically triggers validation
+through GitHub Actions.
+
+The process is as follows:
+  1. A developer writes Playwright automation scripts
+  2. The code is committed and pushed to the GitHub repository
+  3. GitHub detects the push event
+  4. GitHub Actions provisions a fresh virtual machine (runner)
+  5. The latest source code is checked out
+  6. Node.js and project dependencies are installed
+  7. Playwright browsers are installed
+  8. The Playwright test suite is executed
+  9. HTML reports are generated
+  10. Reports are uploaded as artifacts for the team to review
+
+This ensures that every code change is validated automatically, improving code
+quality, reducing manual effort, and enabling faster feedback.
+
+================================================================================
+
+
+
+
+================================================================================
+                         SONICFRAMEWORK - COMPLETE OVERVIEW
+================================================================================
+
+
+OVERVIEW [2-3 MINS]
+================================================================================
+
+The Sonicframework is a robust, enterprise-grade test automation framework
+built on modern tools and best practices.
+
+CORE TECHNOLOGIES:
+--------------------------------------------------------------------------------
+1. Node.js & Playwright:
+   Core automation engine used throughout the framework for browser control
+   and API requests.
+
+2. TypeScript:
+   Primary language ensuring strong typing and modern JavaScript features.
+
+3. @playwright/test (Test Runner):
+   Executes tests with powerful configuration and parallelization.
+
+4. Faker & CSV Utils:
+   Generate and read test data from external sources such as CSV and JSON.
+
+5. Allure Reporter:
+   Generates detailed reports; integration via custom reporter config.
+
+6. fs-extra:
+   Advanced file handling for screenshots, logs and temporary artifacts.
+
+7. Page Object Model:
+   Encapsulates UI interactions representing web pages as classes.
+
+8. CI/CD Tooling:
+   Git for version control, AZURE for CI/CD.
+
+
+COMPONENTS (LAYERED ARCHITECTURE)
+================================================================================
+
+The Sonicframework is structured around a few key packages and utility modules,
+mirroring a layered architecture.
+
+PROJECT STRUCTURE:
+--------------------------------------------------------------------------------
+helpers/
+  └── PlaywrightWrapper      Base class with common UI actions
+  └── fakerUtils             Data generation utilities
+  └── csv, json, db utils    File and database helpers
+
+pages/
+  └── SalesforceLoginPage    Page Object for Login screen
+  └── SalesforceHomePage     Page Object for Home screen
+  └── SalesforceLeadPage     Page Object for Lead management
+  (Each page extends PlaywrightWrapper)
+
+customFixtures/
+  └── salesForceFixture      Playwright fixtures defining test-scoped
+                             objects; injects page classes into tests
+
+tests/
+  └── *.spec.ts              Test files using custom fixtures and
+                             Playwright's test runner
+
+constants/
+  └── Static data such as URLs, credentials and configuration values
+
+data/
+  └── *.json, *.csv          Test data files
+  └── *.interface.ts         TypeScript interfaces for test data
+
+reporter/
+  └── Custom reporters or configuration for Allure
+
+
+THIRD-PARTY LIBRARIES USED:
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Library                    │ Purpose                                        │
+├────────────────────────────┼────────────────────────────────────────────────┤
+│ Playwright                 │ Core automation engine for browser/HTTP       │
+│                            │ interactions                                   │
+│ TypeScript                 │ Language for strong typing                     │
+│ @playwright/test           │ Test runner with fixtures and reporters       │
+│ Allure Playwright reporter │ For detailed test reports                     │
+│ faker                      │ Generates randomized test data                │
+│ fs-extra                   │ Advanced filesystem operations, screenshot    │
+│                            │ handling                                       │
+│ axios                      │ For REST API calls in helpers if needed       │
+└────────────────────────────┴────────────────────────────────────────────────┘
+
+
+OBJECT ORIENTED PROGRAMMING IMPLEMENTATION
+================================================================================
+
+Sonicframework heavily leverages OOP principles:
+
+1. INHERITANCE:
+--------------------------------------------------------------------------------
+  • Page classes extend from PlaywrightWrapper which provides shared methods
+    (click, type, loadApp, etc.)
+  • Fixture classes instantiate pages by passing page and context objects
+
+2. ABSTRACTION:
+--------------------------------------------------------------------------------
+  • PlaywrightWrapper is abstract; some methods such as getNewPage() hide
+    browser internals
+  • Interfaces like data models (account.interface.ts) define contracts
+
+3. POLYMORPHISM:
+--------------------------------------------------------------------------------
+  • Several overloaded helper methods (e.g. type, click variants)
+  • Overridden methods in derived page classes
+  • Custom fixtures demonstrate overriding default behaviors in tests
+
+4. ENCAPSULATION:
+--------------------------------------------------------------------------------
+  • Private fields in wrapper classes and controlled accessors
+  • Selectors stored as object literals inside page classes
+
+
+SUPPORT FOR S.O.L.I.D PRINCIPLES
+================================================================================
+
+The framework was designed with SOLID principles in mind:
+
+1. SINGLE RESPONSIBILITY:
+--------------------------------------------------------------------------------
+  Each class has one responsibility:
+  • Wrappers handle browser interactions
+  • Page classes model specific screens
+  • Fixtures manage object creation
+  • Helpers provide utility functions
+
+2. OPEN/CLOSED:
+--------------------------------------------------------------------------------
+  • New page classes or utilities can be added without modifying existing code
+  • The abstract PlaywrightWrapper is closed for modification but open for
+    extension via subclassing
+
+3. LISKOV SUBSTITUTION:
+--------------------------------------------------------------------------------
+  • Any subclass of PlaywrightWrapper (e.g. SalesforceLoginPage) can be used
+    wherever the base type is expected
+  • Methods behave consistently
+
+4. INTERFACE SEGREGATION:
+--------------------------------------------------------------------------------
+  • Consumers depend only on the methods they use
+  • Page objects expose only relevant actions, not a bloated common interface
+
+5. DEPENDENCY INVERSION:
+--------------------------------------------------------------------------------
+  • High-level test logic depends on abstractions (page interfaces) rather than
+    concrete Playwright implementations
+  • Fixtures invert dependency by providing page instances to tests rather than
+    tests creating them
+
+
+EXECUTION FLOW (PLAYWRIGHT + FIXTURES)
+================================================================================
+
+1. TEST ENTRY:
+--------------------------------------------------------------------------------
+  Each *.spec.ts file imports the test object from customFixtures/salesForceFixture
+
+  import { test } from "../customFixtures/salesForceFixture";
+
+2. FIXTURE SETUP:
+--------------------------------------------------------------------------------
+  Before each test, Playwright provides a fresh page and context.
+  The custom fixture extension instantiates page objects (login, home, lead,
+  etc.) and makes them available as parameters.
+
+3. TEST STEPS:
+--------------------------------------------------------------------------------
+  Inside the test callback, methods on the page objects are called.
+  Example: SalesforceHome.salesforceLogin('ADMINLOGIN')
+
+4. ANNOTATIONS & REPORTING:
+--------------------------------------------------------------------------------
+  Tests add metadata via test.info().annotations.push() for author, case IDs,
+  etc. The playwright.config.ts defines reporters including Allure.
+
+5. LIFECYCLE HOOKS:
+--------------------------------------------------------------------------------
+  Playwright provides test.beforeAll, test.afterEach, test.afterAll hooks.
+  The fixture file contains commented examples for login and Jira integration.
+  Global setup (if used) can prepare browser context.
+
+6. DATA PROVISION:
+--------------------------------------------------------------------------------
+  Data comes from fakerUtils or static JSON/CSV files read via helper
+  utilities.
+
+7. RESULT GENERATION:
+--------------------------------------------------------------------------------
+  On completion, Playwright's reporters produce HTML and Allure reports;
+  screenshots/logs are collected via helpers.
+
+
+ARCHITECTURE DIAGRAM (FLOWCHART)
+================================================================================
+
+flowchart TD
+    A[Spec File (tests/*.spec.ts)] -->|imports| B[customFixtures/salesForceFixture]
+    B --> C[Playwright fixtures]
+    C --> D[Page Objects]
+    D --> E[PlaywrightWrapper<br/>(helpers/playwright.ts)]
+    D --> F[helpers/* utilities]
+    A --> G[FakerData & constants]
+    C --> H[@playwright/test]
+    H --> I[browser/context/page]
+    I -->|actions| E
+    E -->|interacts| I
+    H --> J[Reporters (HTML, Allure)]
+    J --> K[reporter/* configurations]
+
+================================================================================
+              PLAYWRIGHT + TYPESCRIPT — EXCEPTION HANDLING & ALLURE REPORT NOTES
+================================================================================
+
+
+1. EXCEPTION HANDLING / ERROR HANDLING IN TYPESCRIPT
+================================================================================
+
+DEFINITION:
+────────────────────────────────────────────────────────────────────────────────
+Exception handling is a mechanism used to handle unexpected runtime errors
+gracefully, instead of allowing the application/program to terminate abruptly.
+
+TypeScript uses JavaScript's built-in:
+  try
+  catch
+  finally
+
+mechanism.
+
+BASIC SYNTAX:
+────────────────────────────────────────────────────────────────────────────────
+try {
+    // Code that may cause an error
+}
+catch (error) {
+    // Handle the error
+}
+finally {
+    // Code that executes regardless of error
+}
+
+
+2. try
+================================================================================
+
+try contains the code that might throw an error.
+
+try {
+    console.log("Executing risky code");
+}
+catch (error) {
+    console.log("Error occurred");
+}
+
+Think: try = Try to execute this code
+
+
+3. catch
+================================================================================
+
+catch executes when an error occurs inside the try block.
+
+try {
+    throw new Error("Login failed");
+}
+catch (error) {
+    console.log("Error occurred:", error);
+}
+
+Output:
+  Error occurred: Error: Login failed
+
+Think: catch = If something goes wrong, handle it here
+
+
+4. finally
+================================================================================
+
+finally executes whether an error occurs or not.
+
+try {
+    console.log("Opening browser");
+    throw new Error("Page failed");
+}
+catch (error) {
+    console.log("Error handled");
+}
+finally {
+    console.log("Closing browser");
+}
+
+Output:
+  Opening browser
+  Error handled
+  Closing browser
+
+Think: finally = Code that must execute regardless of the result
+
+
+5. EXCEPTION HANDLING FLOW
+================================================================================
+
+              try
+               |
+        Execute the code
+               |
+          Error occurs?
+          /           \
+        NO             YES
+        |               |
+    Continue          catch
+        |               |
+        |          Handle error
+        |               |
+        └───────┬───────┘
+                |
+             finally
+                |
+          Continue execution
+
+
+6. return inside catch
+================================================================================
+
+Consider this Playwright example:
+
+try {
+    await this.page.waitForSelector(frameLocator, {
+        state: 'attached',
+        timeout: 5000
+    });
+}
+catch (error) {
+    return;
+}
+
+WHAT HAPPENS?
+────────────────────────────────────────────────────────────────────────────────
+waitForSelector() waits for the frame to become attached.
+
+If the frame is not attached within 5 seconds:
+  waitForSelector() → Timeout/Error → catch → return → Exit current function
+
+So: catch (error) { return; } means:
+  "If the frame is not available, stop executing the current function."
+
+
+7. DIFFERENCE BETWEEN return AND console.error
+================================================================================
+
+USING return:
+────────────────────────────────────────────────────────────────────────────────
+catch (error) {
+    return;
+}
+The function stops.
+
+USING console.error:
+────────────────────────────────────────────────────────────────────────────────
+catch (error) {
+    console.error(error);
+}
+The error is printed, but execution can continue after the catch block.
+
+Therefore:
+  return         → Stop the current function
+  console.error() → Print the error and continue
+
+
+8. EXCEPTION HANDLING IN PLAYWRIGHT
+================================================================================
+
+Your example:
+
+try {
+    await this.page.waitForSelector(frameLocator, {
+        state: 'attached',
+        timeout: 5000
+    });
+}
+catch (error) {
+    return;
+}
+
+PURPOSE:
+────────────────────────────────────────────────────────────────────────────────
+This handles the situation where the frame is not attached within 5 seconds.
+
+Another example:
+try {
+    const frameVisible = await frameEle.locator('body').isVisible({
+        timeout: 5000
+    });
+    expect(frameVisible).toBeTruthy();
+    console.log("Frame element is visible");
+}
+catch (error) {
+    console.error(error);
+}
+
+Here, errors can occur from:
+  isVisible()  or  expect()
+
+If either throws an error, control moves to catch.
+
+
+9. IMPORTANT POINT ABOUT ASSERTIONS AND catch
+================================================================================
+
+Consider:
+try {
+    expect(frameVisible).toBeTruthy();
+}
+catch (error) {
+    console.error(error);
+}
+
+The assertion can fail, but you're catching the error and not rethrowing it.
+
+If the intention is to log the error AND still fail the test, use:
+catch (error) {
+    console.error(error);
+    throw error;
+}
+
+DIFFERENCE:
+────────────────────────────────────────────────────────────────────────────────
+catch (error) {
+    console.error(error);
+}
+→ Error may be swallowed.
+
+catch (error) {
+    console.error(error);
+    throw error;
+}
+→ Error is logged AND propagated, so the test can fail normally.
+
+IMPORTANT PRINCIPLE:
+────────────────────────────────────────────────────────────────────────────────
+catch does not mean "ignore the error." It means "take control when an error
+occurs."
+
+
+10. YOUR FRAME VERIFICATION METHOD
+================================================================================
+
+async verifyEleinFrame(
+    frameLocator: string,
+    locator: string,
+    name: string
+) {
+    await test.step(
+        `Verifying the ${name} is present in the frame`,
+        async () => {
+            try {
+                await this.page.waitForSelector(
+                    frameLocator,
+                    {
+                        state: 'attached',
+                        timeout: 5000
+                    }
+                );
+            }
+            catch (error) {
+                return;
+            }
+
+            const frameEle = this.page.frameLocator(frameLocator);
+            const elementCount = await frameEle.locator(locator).count();
+
+            if (elementCount > 0) {
+                try {
+                    const frameVisible = await frameEle
+                        .locator('body')
+                        .isVisible({
+                            timeout: 5000
+                        });
+                    expect(frameVisible).toBeTruthy();
+                    console.log("Frame element is visible");
+                }
+                catch (error) {
+                    console.error(error);
+                }
+            }
+        }
+    );
+}
+
+LOGICAL FLOW:
+────────────────────────────────────────────────────────────────────────────────
+Check frame
+    ↓
+Frame attached?
+ ┌───────┴───────┐
+YES             NO
+ ↓                ↓
+Continue         catch
+ ↓                ↓
+Find element     return
+ ↓
+elementCount > 0?
+ ↓
+YES
+ ↓
+Check visibility
+ ↓
+Assertion
+ ↓
+Pass / catch error
+
+
+11. ONE IMPROVEMENT IN YOUR METHOD
+================================================================================
+
+You calculated:
+  const elementCount = await frameEle.locator(locator).count();
+
+But later you checked:
+  frameEle.locator('body').isVisible()
+
+If your intention is to verify the specified locator, use:
+  const elementVisible = await frameEle.locator(locator).isVisible();
+  expect(elementVisible).toBeTruthy();
+
+So the relevant part becomes:
+if (elementCount > 0) {
+    try {
+        const elementVisible = await frameEle.locator(locator).isVisible();
+        expect(elementVisible).toBeTruthy();
+        console.log(`${name} is visible`);
+    }
+    catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+================================================================================
+ 			ALLURE REPORT INTEGRATION
+================================================================================
+
+For a Playwright + TypeScript framework, you can integrate Allure using:
+  allure-playwright
+
+Your project already has:
+  "allure-playwright": "^3.0.6"
+
+So you don't need to install it again.
+
+
+ ALLURE COMMAND LINE
+================================================================================
+
+To generate and open the Allure report, install:
+  npm install -D allure-commandline
+
+There are two parts:
+  allure-playwright → Generates test results
+  allure-commandline → Generates/opens HTML report
+
+
+1. CONFIGURE ALLURE IN PLAYWRIGHT
+================================================================================
+
+In playwright.config.ts:
+
+import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+    reporter: [
+        ['list'],
+        [
+            'allure-playwright',
+            {
+                resultsDir: 'allure-results',
+                detail: true
+            }
+        ]
+    ]
+});
+
+IMPORTANT OPTION:
+────────────────────────────────────────────────────────────────────────────────
+detail: true
+This enables detailed Playwright step information in Allure.
+
+
+2. ALLURE REPORT GENERATION FLOW
+================================================================================
+
+Run tests:
+  npx playwright test
+
+This generates: allure-results/
+
+Then generate the HTML report:
+  npx allure generate allure-results --clean -o allure-report
+
+Then open:
+  npx allure open allure-report
+
+OVERALL FLOW:
+────────────────────────────────────────────────────────────────────────────────
+Playwright Tests → allure-playwright → allure-results →
+allure-commandline → allure-report → Browser
+
+
+3. ADDING SCREENSHOTS TO ALLURE
+================================================================================
+
+If you want screenshots attached to your Allure report, you can use:
+  allure.attachment()
+
+The modern API is from:
+  allure-js-commons
+
+RECOMMENDED IMPORT:
+────────────────────────────────────────────────────────────────────────────────
+import * as allure from 'allure-js-commons';
+import { ContentType } from 'allure-js-commons';
+
+Then create a reusable method:
+async attachScreenshot(name: string) {
+    await allure.attachment(
+        name,
+        await this.page.screenshot(),
+        ContentType.PNG
+    );
+}
+
+
+4. IF YOU GOT THE allure is deprecated WARNING
+================================================================================
+
+
+The modern approach is:
+  import * as allure from 'allure-js-commons';
+
+instead of using the deprecated legacy import.
+
+You can also import only what you need:
+  import { attachment, ContentType } from 'allure-js-commons';
+
+Then:
+  async attachScreenshot(name: string) {
+      await attachment(
+          name,
+          await this.page.screenshot(),
+          ContentType.PNG
+      );
+  }
+
+
+5. SCREENSHOT AFTER EACH test.step()
+================================================================================
+
+If you want your Allure report to look like:
+
+Login Test
+│
+├── Enter username
+│   └── 📷 Screenshot
+│
+├── Enter password
+│   └── 📷 Screenshot
+│
+└── Click Login
+    └── 📷 Screenshot
+
+you can use:
+await test.step('Enter username', async () => {
+    await page.locator('#username').fill('admin');
+    await this.attachScreenshot('After entering username');
+});
+
+await test.step('Enter password', async () => {
+    await page.locator('#password').fill('admin123');
+    await this.attachScreenshot('After entering password');
+});
+
+await test.step('Click Login', async () => {
+    await page.locator('#login').click();
+    await this.attachScreenshot('After clicking login');
+});
+
+
+6. BUSINESS STEPS vs EVERY PLAYWRIGHT ACTION
+================================================================================
+
+There is an important distinction.
+
+BUSINESS-LEVEL STEPS — RECOMMENDED:
+────────────────────────────────────────────────────────────────────────────────
+await test.step('Login to application', async () => {
+    await page.locator('#username').fill('admin');
+    await page.locator('#password').fill('admin123');
+    await page.locator('#login').click();
+    await this.attachScreenshot('Login completed');
+});
+
+This gives meaningful screenshots.
+
+EVERY PLAYWRIGHT ACTION:
+────────────────────────────────────────────────────────────────────────────────
+You could theoretically capture:
+  goto       → screenshot
+  fill       → screenshot
+  fill       → screenshot
+  click      → screenshot
+  check      → screenshot
+
+But this can create a very large number of screenshots, making the Allure
+report unnecessarily large.
+
+RECOMMENDED FRAMEWORK APPROACH:
+────────────────────────────────────────────────────────────────────────────────
+Capture screenshots at meaningful business/test steps, rather than after every
+low-level Playwright action.
+
+================================================================================
+ COMPLETE CONCEPT SUMMARY
+================================================================================
+
+                    TypeScript
+                        │
+                Exception Handling
+                        │
+              ┌─────────┼─────────┐
+              ↓         ↓         ↓
+             try      catch    finally
+              │         │         │
+           Risky      Handle     Always
+            code       error     execute
+
+
+                    Playwright
+                        │
+                     Test Step
+                        │
+                 ┌──────┴──────┐
+                 ↓             ↓
+              Action       Screenshot
+                 │             │
+                 └──────┬──────┘
+                        ↓
+                 Allure Reporter
+                        ↓
+                  allure-results
+                        ↓
+                 Allure HTML Report
+
+
+QUICK INTERVIEW REVISION
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Concept               │ Meaning                                             │
+├───────────────────────┼─────────────────────────────────────────────────────┤
+│ try                   │ Contains code that may throw an error               │
+│ catch                 │ Handles the error                                   │
+│ finally               │ Executes regardless of error                        │
+│ return in catch       │ Exits the current function                          │
+│ console.error()       │ Logs the error                                      │
+│ throw error           │ Re-throws the error                                 │
+│ allure-playwright     │ Connects Playwright with Allure                    │
+│ allure-results        │ Raw Allure test results                             │
+│ allure-commandline    │ Generates/opens Allure reports                     │
+│ allure.attachment()   │ Adds attachments such as screenshots                │
+│ test.step()           │ Creates meaningful test steps                       │
+│ detail: true          │ Enables detailed Playwright steps in Allure        │
+└───────────────────────┴─────────────────────────────────────────────────────┘
+
+KEY TAKEAWAY:
+────────────────────────────────────────────────────────────────────────────────
+Exception handling controls how your Playwright framework behaves when
+something unexpected happens, while Allure reporting gives you visibility into
+what happened during the test execution, including meaningful step-level
+screenshots.
+
+================================================================================
+                            KEY TAKEAWAYS
+================================================================================
+
+  • CI/CD pipelines automate build, test, and deployment processes.
+
+  • GitHub Actions is GitHub's native CI/CD solution and integrates seamlessly
+    with Playwright.
+
+  • Microsoft built Playwright to provide a modern, reliable, and cross-browser
+    automation framework that aligns with its GitHub and Azure ecosystem.
+
+  • A GitHub Actions workflow is defined using a YAML file stored under
+    .github/workflows.
+
+  • Every push to the repository can automatically trigger Playwright tests on
+    cloud-hosted runners.
+
+  • Test reports and execution logs are available directly in the GitHub
+    Actions tab, allowing teams to review results without running tests
+    locally.
+
+
+
+================================================================================
+                              END OF DOCUMENT
+================================================================================
